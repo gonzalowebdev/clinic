@@ -3,7 +3,7 @@ import { toast } from '../ui.js';
 import { attachUrl, deleteAttachment, loadAttachments, signPaths, uploadAttachment } from '../storage.js';
 import { esc } from '../utils.js';
 
-async function renderGallery(pid,cid){
+export async function renderGallery(pid,cid){
   const cont=document.getElementById(cid);
   cont.innerHTML='<p style="font-size:12px;color:var(--text-muted)">Cargando…</p>';
   const files=await loadAttachments(pid);

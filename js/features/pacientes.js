@@ -6,7 +6,7 @@ import { toast } from '../ui.js';
 import { clearFormValues, gv, setFormValues } from '../forms.js';
 import { esc } from '../utils.js';
 import { renderAll, renderDash, renderMain } from './render.js';
-import { buildProfMultiList, loadPatientProfs, renderProfTags, saveProfLinks } from './profesionales.js';
+import { buildProfMultiList, loadPatientProfs, renderProfTags, saveProfLinks } from './comun.js';
 
 export async function loadPacientes() {
   const { data, error } = await sb.from(TABLE).select('*').order('created_at',{ascending:false});
@@ -103,15 +103,11 @@ window.openForm=async function(id=null){
 
 window.closeForm=function(){ document.getElementById('form-overlay').classList.remove('open'); state.editId=null; };
 
-window.closeFormIfBg=function(e){ if(e.target===document.getElementById('form-overlay')) window.closeForm(); };
-
 window.openDet=function(id){ location.href='paciente.html?id='+id; };
 
 window.closeDet=function(){ document.getElementById('det-overlay')?.classList.remove('open'); };
 
 window.closeDetIfBg=function(e){ if(e.target===document.getElementById('det-overlay')) window.closeDet(); };
-
-window.switchTab=function(name,el){ document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); document.querySelectorAll('.tab-pane').forEach(t=>t.classList.remove('active')); el.classList.add('active'); document.getElementById('tab-'+name).classList.add('active'); };
 
 window.closeDel=function(){ document.getElementById('del-overlay').classList.remove('open'); state.deleteId=null; };
 

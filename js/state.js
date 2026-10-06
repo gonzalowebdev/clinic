@@ -22,4 +22,5 @@ export const state = {
   editUsrId: null,
   currentUser: null,
   isAdmin: false,
+  paciente: null,
 };

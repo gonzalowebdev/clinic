@@ -5,6 +5,7 @@ import { ICO_DEL, ICO_EDIT, ICO_EYE } from '../constants.js';
 import { toast } from '../ui.js';
 import { esc } from '../utils.js';
 import { emptyRow } from './render.js';
+import { buildProfMultiList } from './comun.js';
 
 export async function loadProfesionales() {
   const { data, error } = await sb.from(P_TABLE).select('*').order('apellido');
@@ -126,74 +127,3 @@ window.openProfDet = function(id) { location.href='profesional.html?id='+id; };
 window.closeProfDet=function(){ document.getElementById('prof-det-overlay')?.classList.remove('open'); };
 
 window.closeProfDetIfBg=function(e){ if(e.target===document.getElementById('prof-det-overlay')) window.closeProfDet(); };
-
-export function buildProfMultiList(filter='') {
-  const list = document.getElementById('prof-multi-list');
-  if (!list) return;
-  const q = filter.toLowerCase();
-  const items = state.profesionales.filter(p =>
-    !q || `${p.apellido} ${p.nombres} ${p.especialidad||''}`.toLowerCase().includes(q)
-  );
-  if (!items.length) {
-    list.innerHTML='<div style="padding:10px;font-size:12px;color:var(--text-muted)">Sin resultados.</div>';
-    return;
-  }
-  list.innerHTML = items.map(p => {
-    const sel = state.selectedProfIds.includes(p.id);
-    return `<label class="prof-multi-item ${sel?'selected':''}" id="pmi-${p.id}">
-      <input type="checkbox" ${sel?'checked':''} onchange="toggleProfSel('${p.id}',this.checked)">
-      <div>
-        <div style="font-weight:500;color:var(--text)">${esc(p.apellido)}, ${esc(p.nombres)}</div>
-        ${esc(p.especialidad)?`<div style="font-size:11px;color:var(--text-muted)">${esc(p.especialidad)}</div>`:''}
-      </div>
-    </label>`;
-  }).join('');
-}
-
-window.filterProfMulti = function(val) { buildProfMultiList(val); };
-
-window.toggleProfSel = function(profId, checked) {
-  if (checked && !state.selectedProfIds.includes(profId)) state.selectedProfIds.push(profId);
-  else if (!checked) state.selectedProfIds = state.selectedProfIds.filter(x=>x!==profId);
-  // Update item style
-  const item = document.getElementById(`pmi-${profId}`);
-  if (item) item.classList.toggle('selected', checked);
-  renderProfTags();
-};
-
-export function renderProfTags() {
-  const cont = document.getElementById('prof-selected-tags');
-  if (!cont) return;
-  cont.innerHTML = state.selectedProfIds.map(id => {
-    const p = state.profesionales.find(x=>x.id===id);
-    if (!p) return '';
-    const label = `${p.apellido}, ${p.nombres}${p.especialidad?' · '+p.especialidad:''}`;
-    return `<span class="prof-tag" title="${esc(label)}">
-      <span class="prof-tag-txt">${esc(label)}</span>
-      <button onclick="toggleProfSel('${id}',false);const cb=document.querySelector('#pmi-${id} input');if(cb){cb.checked=false;}" title="Quitar">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
-      </button>
-    </span>`;
-  }).join('');
-}
-
-// Load profs assigned to a patient (for edit form)
-export async function loadPatientProfs(pacienteId) {
-  const { data } = await sb.from(PP_TABLE).select('profesional_id').eq('paciente_id', pacienteId);
-  state.selectedProfIds = (data||[]).map(r=>r.profesional_id);
-  buildProfMultiList();
-  renderProfTags();
-}
-
-// Save profesional links for a patient
-export async function saveProfLinks(pacienteId) {
-  // Get current links
-  const { data: existing } = await sb.from(PP_TABLE).select('profesional_id').eq('paciente_id', pacienteId);
-  const existingIds = (existing||[]).map(r=>r.profesional_id);
-  // Insert new
-  const toAdd = state.selectedProfIds.filter(id => !existingIds.includes(id));
-  if (toAdd.length) await sb.from(PP_TABLE).insert(toAdd.map(pid=>({paciente_id:pacienteId,profesional_id:pid})));
-  // Remove old
-  const toRemove = existingIds.filter(id => !state.selectedProfIds.includes(id));
-  for (const pid of toRemove) await sb.from(PP_TABLE).delete().eq('paciente_id',pacienteId).eq('profesional_id',pid);
-}

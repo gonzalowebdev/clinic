@@ -1,4 +1,4 @@
-// Página: index.html — punto de entrada. Carga los módulos de funciones y arranca la app.
+// Página: index.html — punto de entrada.
 import { state } from '../state.js';
 import { TABLE, sb } from '../supabase.js';
 import { loadUserRole, showApp, showLogin } from '../features/auth.js';
@@ -15,6 +15,7 @@ import '../features/adjuntos.js';
 import '../features/profesionales.js';
 import '../features/usuarios.js';
 import '../features/app.js';
+import '../features/comun.js';
 
 /* ── CONFIG ── */
 console.log("🔌 Conectando a Supabase");
