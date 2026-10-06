@@ -660,3 +660,37 @@ body.is-admin .admin-only-block{display:block!important;}
 :focus-visible{outline:2px solid var(--accent2);outline-offset:2px;}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;}}
 @media(max-width:768px){.ic-btn{width:34px;height:34px;}.chip{padding:6px 14px;}}
+
+/* TABLAS COMO TARJETAS EN CELULAR (solo CSS: no depende del JS que genera las filas) */
+@media(max-width:640px){
+.tbl-cards thead{display:none;}
+.tbl-cards,.tbl-cards tbody{display:block;width:100%;}
+.tbl-cards tbody tr{display:grid;grid-template-columns:1fr 1fr;gap:8px 14px;padding:14px 16px;border-bottom:1px solid var(--border);}
+.tbl-cards tbody tr:last-child{border-bottom:none;}
+.tbl-cards td{display:block;padding:0;border:0;min-width:0;overflow-wrap:anywhere;}
+.tbl-cards td:first-child,.tbl-cards td:last-child,.tbl-cards td[colspan]{grid-column:1/-1;}
+.tbl-cards td:not(:first-child):not(:last-child):not([colspan])::before{display:block;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted);margin-bottom:2px;}
+.tbl-cards tbody tr:hover td{background:none;}
+#dash-tbody td:nth-child(2)::before{content:'DNI';}
+#dash-tbody td:nth-child(3)::before{content:'Patología';}
+#dash-tbody td:nth-child(4)::before{content:'Médico';}
+#dash-tbody td:nth-child(5)::before{content:'Ciudad';}
+#main-tbody td:nth-child(2)::before{content:'DNI';}
+#main-tbody td:nth-child(3)::before{content:'Teléfono';}
+#main-tbody td:nth-child(4)::before{content:'Patología';}
+#main-tbody td:nth-child(5)::before{content:'Médico';}
+#main-tbody td:nth-child(6)::before{content:'Ciudad';}
+#main-tbody td:nth-child(7)::before{content:'Estado';}
+#hist-tbody td:nth-child(2)::before{content:'Historia clínica';}
+#hist-tbody td:nth-child(3)::before{content:'Epicrisis';}
+#hist-tbody td:nth-child(4)::before{content:'Diagnóstico';}
+#est-tbody td:nth-child(2)::before{content:'Estudios';}
+#est-tbody td:nth-child(3)::before{content:'Observaciones';}
+#prof-tbody td:nth-child(2)::before{content:'Especialidad';}
+#prof-tbody td:nth-child(3)::before{content:'Matrícula';}
+#prof-tbody td:nth-child(4)::before{content:'Teléfono';}
+#prof-tbody td:nth-child(5)::before{content:'Pacientes';}
+#usr-tbody td:nth-child(2)::before{content:'Nombre';}
+#usr-tbody td:nth-child(3)::before{content:'Rol';}
+#usr-tbody td:nth-child(4)::before{content:'Registrado';}
+}
