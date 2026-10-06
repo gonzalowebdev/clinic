@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Ficha del Profesional · AtHome Enfermería</title>
+<link rel="icon" href="logo.svg" type="image/svg+xml">
+<title>Ficha del Profesional · Clinic</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/base.css">
 <link rel="stylesheet" href="css/detail.css">
@@ -170,7 +171,7 @@ async function renderProfesionalDetail() {
   document.getElementById('det-name').textContent = `${p.apellido}, ${p.nombres}`;
   document.getElementById('det-sub').textContent = [p.especialidad, p.matricula ? 'Mat. '+p.matricula : ''].filter(Boolean).join(' · ') || '—';
   document.getElementById('prof-page-title').textContent = `${p.apellido}, ${p.nombres}`;
-  document.title = `${p.apellido}, ${p.nombres} · AtHome Enfermería`;
+  document.title = `${p.apellido}, ${p.nombres} · Clinic`;
 
   document.getElementById('btn-prof-edit').onclick   = () => window.openProfForm();
   document.getElementById('btn-prof-delete').onclick = () => window.askDeleteProf();

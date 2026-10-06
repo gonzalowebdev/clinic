@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Ficha del Paciente · AtHome Enfermería</title>
+<link rel="icon" href="logo.svg" type="image/svg+xml">
+<title>Ficha del Paciente · Clinic</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <link rel="stylesheet" href="css/base.css">
@@ -354,7 +355,7 @@ async function renderPacienteDetail() {
   document.getElementById('det-name').textContent = `${p.apellido}, ${p.nombres}`;
   document.getElementById('det-sub').textContent = `DNI: ${p.dni||'—'}${p.ciudad?' · '+p.ciudad:''}`;
   document.getElementById('pac-page-title').textContent = `${p.apellido}, ${p.nombres}`;
-  document.title = `${p.apellido}, ${p.nombres} · AtHome Enfermería`;
+  document.title = `${p.apellido}, ${p.nombres} · Clinic`;
 
   const active = p.activo !== false;
   document.getElementById('pac-status-badge').textContent = active ? 'Activo' : 'Inactivo';
@@ -762,7 +763,7 @@ window.generatePeriodReport = async function() {
   document.getElementById('print-report').innerHTML=`
   <div class="pr-page">
     <div class="pr-header">
-      <div class="pr-logo-area"><img src="path6.png" height="44"><div><div class="pr-org-name">AtHome Enfermería</div><div class="pr-org-sub">Enfermería en casa! · Sistema de Gestión Clínica</div></div></div>
+      <div class="pr-logo-area"><img src="logo.svg" height="44"><div><div class="pr-org-name">Clinic</div><div class="pr-org-sub">Sistema de Gestión Clínica</div></div></div>
       <div class="pr-date"><strong>${fPrint}</strong>Impreso a las ${hPrint}</div>
     </div>
     <div class="pr-title">Informe de Controles por Período</div>
@@ -780,7 +781,7 @@ window.generatePeriodReport = async function() {
       <div class="pr-sign">Firma Enfermería / Responsable<br><br><br>____________________________</div>
       <div class="pr-sign">Aclaración y Fecha<br><br><br>____________________________</div>
     </div>
-    <div class="pr-footer">AtHome Enfermería — Sistema de Gestión Clínica &nbsp;|&nbsp; ${fPrint} · ${hPrint}<br>Documento confidencial. Uso exclusivo del equipo médico tratante.</div>
+    <div class="pr-footer">Clinic — Sistema de Gestión Clínica &nbsp;|&nbsp; ${fPrint} · ${hPrint}<br>Documento confidencial. Uso exclusivo del equipo médico tratante.</div>
   </div>`;
   window.closeRpt();
   window.print();
@@ -801,7 +802,7 @@ window.printPaciente = function(id) {
   document.getElementById('print-report').innerHTML=`
   <div class="pr-page">
     <div class="pr-header">
-      <div class="pr-logo-area"><img src="path6.png" height="44"><div><div class="pr-org-name">AtHome Enfermería</div><div class="pr-org-sub">Enfermería en casa! · Sistema de Gestión Clínica</div></div></div>
+      <div class="pr-logo-area"><img src="logo.svg" height="44"><div><div class="pr-org-name">Clinic</div><div class="pr-org-sub">Sistema de Gestión Clínica</div></div></div>
       <div class="pr-date"><strong>${fPrint}</strong>Impreso a las ${hPrint}</div>
     </div>
     <div class="pr-title">Ficha Clínica del Paciente</div>
@@ -835,7 +836,7 @@ window.printPaciente = function(id) {
       <div class="pr-sign">Firma Enfermería<br><br><br>____________________________</div>
       <div class="pr-sign">Aclaración y Fecha<br><br><br>____________________________</div>
     </div>
-    <div class="pr-footer">AtHome Enfermería · ${fPrint} · ${hPrint} · Documento confidencial.</div>
+    <div class="pr-footer">Clinic · ${fPrint} · ${hPrint} · Documento confidencial.</div>
   </div>`;
   window.print();
 };
@@ -846,8 +847,8 @@ window.printCredencial = function(id) {
     <div class="credencial-wrapper">
       <div class="credencial-card">
         <div class="credencial-header">
-          <img src="path6.png" alt="AtHome" height="32">
-          <div><div class="credencial-org">AtHome Enfermería</div><div class="credencial-org-sub">Enfermería en casa!</div></div>
+          <img src="logo.svg" alt="Clinic" height="32">
+          <div><div class="credencial-org">Clinic</div><div class="credencial-org-sub">Gestión clínica</div></div>
         </div>
         <div class="credencial-body">
           <div id="qr-${id}" style="width:20mm;height:20mm;flex-shrink:0;background:#fff;border-radius:3mm;display:flex;align-items:center;justify-content:center;"></div>

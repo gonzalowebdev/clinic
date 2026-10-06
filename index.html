@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>AtHome Enfermeria sa</title>
+<link rel="icon" href="logo.svg" type="image/svg+xml">
+<title>Clinic</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <link rel="stylesheet" href="css/base.css">
@@ -25,9 +26,9 @@
   <div class="login-card">
     <div class="lc-left">
       <div class="logo-area">
-        <img src="path6.png" height="44">
+        <img src="logo.svg" height="44">
         
-        <div class="logo-txt-wrap"><div class="logo-name">At Home</div><div class="logo-sub">Enfermeria en casa!</div></div>
+        <div class="logo-txt-wrap"><div class="logo-name">Clinic</div><div class="logo-sub">Gestión clínica</div></div>
       </div>
       <div class="lc-body">
         <h1 class="lc-heading">Gestión clínica<br><em>inteligente</em><br>y centralizada</h1>
@@ -70,7 +71,7 @@
         <svg id="l-btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"/><polyline points="10,17 15,12 10,7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
         <span id="l-btn-txt">Iniciar sesión</span>
       </button>
-      <div class="lc-foot">AtHome Enfermeria SA &copy; 2025 · Sistema de Gestión Clínica</div>
+      <div class="lc-foot">Clinic &copy; 2025 · Sistema de Gestión Clínica</div>
     </div>
   </div>
 </div>
@@ -81,8 +82,8 @@
   <aside class="sidebar" id="sidebar">
     <div class="sb-logo">
       <div class="sb-logo-inner">
-        <img src="path6.png" height="36">
-        <div><div class="sb-name">AtHome</div><div class="sb-sub">Enfermeria en casa!</div></div>
+        <img src="logo.svg" height="36">
+        <div><div class="sb-name">Clinic</div><div class="sb-sub">Gestión clínica</div></div>
       </div>
       <button class="sb-close" onclick="closeSb()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" width="16" height="16"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
     </div>
@@ -1006,8 +1007,8 @@ window.generatePeriodReport = async function() {
   <div class="pr-page">
     <div class="pr-header">
       <div class="pr-logo-area">
-        <img src="path6.png" height="44">
-        <div><div class="pr-org-name">AtHome Enfermería</div><div class="pr-org-sub">Enfermería en casa! · Sistema de Gestión Clínica</div></div>
+        <img src="logo.svg" height="44">
+        <div><div class="pr-org-name">Clinic</div><div class="pr-org-sub">Sistema de Gestión Clínica</div></div>
       </div>
       <div class="pr-date"><strong>${fPrint}</strong>Impreso a las ${hPrint}</div>
     </div>
@@ -1033,7 +1034,7 @@ window.generatePeriodReport = async function() {
       <div class="pr-sign">Firma Enfermería / Responsable<br><br><br>____________________________</div>
       <div class="pr-sign">Aclaración y Fecha<br><br><br>____________________________</div>
     </div>
-    <div class="pr-footer">AtHome Enfermería — Sistema de Gestión Clínica &nbsp;|&nbsp; ${fPrint} · ${hPrint}<br>Documento confidencial. Uso exclusivo del equipo médico tratante.</div>
+    <div class="pr-footer">Clinic — Sistema de Gestión Clínica &nbsp;|&nbsp; ${fPrint} · ${hPrint}<br>Documento confidencial. Uso exclusivo del equipo médico tratante.</div>
   </div>`;
 
   closeRpt();
@@ -1052,8 +1053,8 @@ window.printPaciente = function(id) {
   <div class="pr-page">
     <div class="pr-header">
       <div class="pr-logo-area">
-        <img src="path6.png" height="44">
-        <div><div class="pr-org-name">AtHome Enfermería</div><div class="pr-org-sub">Enfermería en casa! · Sistema de Gestión Clínica</div></div>
+        <img src="logo.svg" height="44">
+        <div><div class="pr-org-name">Clinic</div><div class="pr-org-sub">Sistema de Gestión Clínica</div></div>
       </div>
       <div class="pr-date"><strong>${fPrint}</strong>Impreso a las ${hPrint}</div>
     </div>
@@ -1088,7 +1089,7 @@ window.printPaciente = function(id) {
       <div class="pr-sign">Firma Enfermería<br><br><br>____________________________</div>
       <div class="pr-sign">Aclaración y Fecha<br><br><br>____________________________</div>
     </div>
-    <div class="pr-footer">AtHome Enfermería · ${fPrint} · ${hPrint} · Documento confidencial.</div>
+    <div class="pr-footer">Clinic · ${fPrint} · ${hPrint} · Documento confidencial.</div>
   </div>`;
   window.print();
 };
@@ -1838,10 +1839,10 @@ window.printCredencial = function(id) {
     <div class="credencial-wrapper">
       <div class="credencial-card">
         <div class="credencial-header">
-          <img src="path6.png" alt="AtHome" height="32">
+          <img src="logo.svg" alt="Clinic" height="32">
           <div>
-            <div class="credencial-org">AtHome Enfermería</div>
-            <div class="credencial-org-sub">Enfermería en casa!</div>
+            <div class="credencial-org">Clinic</div>
+            <div class="credencial-org-sub">Gestión clínica</div>
           </div>
         </div>
         <div class="credencial-body">
