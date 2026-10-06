@@ -3,6 +3,7 @@ import { sb, P_TABLE, PP_TABLE, USR_TABLE } from '../supabase.js';
 import { toast } from '../ui.js';
 import { esc } from '../utils.js';
 import { initEvents } from '../events.js';
+import { actions } from '../events.js';
 
 initEvents();
 
@@ -61,8 +62,8 @@ async function renderProfesionalDetail() {
   document.getElementById('prof-page-title').textContent = `${p.apellido}, ${p.nombres}`;
   document.title = `${p.apellido}, ${p.nombres} · Clinic`;
 
-  document.getElementById('btn-prof-edit').onclick   = () => window.openProfForm();
-  document.getElementById('btn-prof-delete').onclick = () => window.askDeleteProf();
+  document.getElementById('btn-prof-edit').onclick   = () => actions.openProfForm();
+  document.getElementById('btn-prof-delete').onclick = () => actions.askDeleteProf();
 
   const { data: links } = await sb.from(PP_TABLE).select('paciente_id, pacientes(id,apellido,nombres,dni,patologia)').eq('profesional_id',p.id);
   const pacs = (links||[]).map(l=>l.pacientes).filter(Boolean);
@@ -95,7 +96,7 @@ async function renderProfesionalDetail() {
 /* ══════════════════════════════
    EDITAR PROFESIONAL
 ══════════════════════════════ */
-window.openProfForm = function() {
+actions.openProfForm = function() {
   if (!isAdmin) return;
   const p = profesional;
   document.getElementById('pf-apellido').value      = p.apellido||'';
@@ -109,10 +110,10 @@ window.openProfForm = function() {
   document.getElementById('pf-observaciones').value = p.observaciones||'';
   document.getElementById('prof-form-overlay').classList.add('open');
 };
-window.closeProfForm = function() { document.getElementById('prof-form-overlay').classList.remove('open'); };
-window.closeProfFormIfBg = function(e) { if(e.target===document.getElementById('prof-form-overlay')) window.closeProfForm(); };
+actions.closeProfForm = function() { document.getElementById('prof-form-overlay').classList.remove('open'); };
+actions.closeProfFormIfBg = function(e) { if(e.target===document.getElementById('prof-form-overlay')) actions.closeProfForm(); };
 
-window.saveProfesional = async function() {
+actions.saveProfesional = async function() {
   if (!isAdmin) return;
   const apellido = document.getElementById('pf-apellido').value.trim();
   const nombres  = document.getElementById('pf-nombres').value.trim();
@@ -133,24 +134,24 @@ window.saveProfesional = async function() {
   btn.disabled=false; txt.textContent='Guardar';
   if (error) { toast(`Error: ${error.message}`,'error'); return; }
   toast('Profesional actualizado.','success');
-  window.closeProfForm();
+  actions.closeProfForm();
   await loadProfesional();
 };
 
 /* ══════════════════════════════
    ELIMINAR
 ══════════════════════════════ */
-window.askDeleteProf = function() { document.getElementById('del-overlay').classList.add('open'); };
-window.closeDel = function() { document.getElementById('del-overlay').classList.remove('open'); };
-window.closeDelIfBg = function(e) { if(e.target===document.getElementById('del-overlay')) window.closeDel(); };
-window.confirmDeleteProf = async function() {
+actions.askDeleteProf = function() { document.getElementById('del-overlay').classList.add('open'); };
+actions.closeDel = function() { document.getElementById('del-overlay').classList.remove('open'); };
+actions.closeDelIfBg = function(e) { if(e.target===document.getElementById('del-overlay')) actions.closeDel(); };
+actions.confirmDeleteProf = async function() {
   if (!isAdmin || !profesional) return;
   const btn=document.getElementById('btn-confirm-del');
   btn.disabled=true; btn.textContent='Eliminando…';
   await sb.from(PP_TABLE).delete().eq('profesional_id',profesional.id);
   const { error } = await sb.from(P_TABLE).delete().eq('id',profesional.id);
   btn.disabled=false; btn.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" width="15" height="15"><polyline points="3,6 5,6 21,6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg> Eliminar`;
-  if (error) { toast(`Error: ${error.message}`,'error'); window.closeDel(); return; }
+  if (error) { toast(`Error: ${error.message}`,'error'); actions.closeDel(); return; }
   toast('Profesional eliminado.','info');
   location.href = 'index.html';
 };
@@ -161,4 +162,4 @@ window.confirmDeleteProf = async function() {
 
 (function initTheme() { const saved = localStorage.getItem('mc_theme') || 'dark'; if (saved==='light') document.body.classList.add('light'); })();
 
-document.addEventListener('keydown',e=>{ if(e.key==='Escape'){window.closeProfForm();window.closeDel();} });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'){actions.closeProfForm();actions.closeDel();} });

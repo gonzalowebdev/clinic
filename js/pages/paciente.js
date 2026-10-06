@@ -10,6 +10,7 @@ import '../features/ficha/informes.js';
 import '../features/comun.js';
 import '../features/adjuntos.js';
 import { initEvents } from '../events.js';
+import { actions } from '../events.js';
 
 initEvents();
 
@@ -29,7 +30,7 @@ if (!pacId) {
 
 (function initTheme() { const saved = localStorage.getItem('mc_theme') || 'dark'; if (saved==='light') document.body.classList.add('light'); })();
 
-document.addEventListener('keydown',e=>{ if(e.key==='Escape'){window.closeForm();window.closeEntrada();window.closeRpt();window.closeLightbox();} });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'){actions.closeForm();actions.closeEntrada();actions.closeRpt();actions.closeLightbox();} });
 
 const s=document.createElement('style');
 

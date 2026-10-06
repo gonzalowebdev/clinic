@@ -5,6 +5,7 @@ import { ICO_DEL, ICO_EDIT } from '../constants.js';
 import { toast } from '../ui.js';
 import { esc } from '../utils.js';
 import { emptyRow } from './render.js';
+import { actions } from '../events.js';
 
 export async function renderUsuarios() {
   if (!state.isAdmin) return;
@@ -34,7 +35,7 @@ export async function renderUsuarios() {
   }).join('');
 }
 
-window.openUsrForm = function(id=null) {
+actions.openUsrForm = function(id=null) {
   if (!state.isAdmin) return;
   state.editUsrId = id || null;
   document.getElementById('uf-email').value  = '';
@@ -61,11 +62,11 @@ window.openUsrForm = function(id=null) {
   document.getElementById('usr-form-overlay').classList.add('open');
 };
 
-window.closeUsrForm  = function() { document.getElementById('usr-form-overlay').classList.remove('open'); state.editUsrId=null; };
+actions.closeUsrForm  = function() { document.getElementById('usr-form-overlay').classList.remove('open'); state.editUsrId=null; };
 
-window.closeUsrFormIfBg = function(e) { if(e.target===document.getElementById('usr-form-overlay')) window.closeUsrForm(); };
+actions.closeUsrFormIfBg = function(e) { if(e.target===document.getElementById('usr-form-overlay')) actions.closeUsrForm(); };
 
-window.saveUsuario = async function() {
+actions.saveUsuario = async function() {
   if (!state.isAdmin) return;
   const email  = document.getElementById('uf-email').value.trim();
   const nombre = document.getElementById('uf-nombre').value.trim();
@@ -110,11 +111,11 @@ window.saveUsuario = async function() {
     toast('Usuario creado. Recibirá un email de confirmación.','success');
   }
   btn.disabled=false; txt.textContent='Guardar';
-  window.closeUsrForm();
+  actions.closeUsrForm();
   await renderUsuarios();
 };
 
-window.deleteUsuario = async function(id) {
+actions.deleteUsuario = async function(id) {
   if (!state.isAdmin || id===state.currentUser?.id) return;
   if (!confirm('¿Eliminar este usuario? No podrá más acceder al sistema.')) return;
   // Delete perfil (auth.users requires service key — we delete the profile row)

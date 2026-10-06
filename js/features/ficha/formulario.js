@@ -6,8 +6,9 @@ import { toast } from '../../ui.js';
 import { clearFormValues, gv, setFormValues } from '../../forms.js';
 import { loadPaciente } from './detalle.js';
 import { buildProfMultiList, loadPatientProfs, renderProfTags, saveProfLinks } from '../comun.js';
+import { actions } from '../../events.js';
 
-window.openForm=async function(id=null){
+actions.openForm=async function(id=null){
   state.editId=id||state.paciente.id;
   clearFormValues();
   state.selectedProfIds=[];
@@ -20,9 +21,9 @@ window.openForm=async function(id=null){
   document.getElementById('form-overlay').classList.add('open');
 };
 
-window.closeForm=function(){ document.getElementById('form-overlay').classList.remove('open'); };
+actions.closeForm=function(){ document.getElementById('form-overlay').classList.remove('open'); };
 
-window.savePaciente = async function() {
+actions.savePaciente = async function() {
   if (!gv('apellido')||!gv('nombres')||!gv('dni')) { toast('Apellido, Nombres y DNI son obligatorios.','error'); return; }
   const payload={};
   DB_COLS.forEach(col=>{ payload[col]=gv(col)||null; });
@@ -33,6 +34,6 @@ window.savePaciente = async function() {
   if (error) { toast(`Error: ${error.message}`,'error'); return; }
   await saveProfLinks(state.paciente.id);
   toast('Paciente actualizado.','success');
-  window.closeForm();
+  actions.closeForm();
   await loadPaciente();
 };

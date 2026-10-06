@@ -7,6 +7,7 @@ import { clearFormValues, gv, setFormValues } from '../forms.js';
 import { esc } from '../utils.js';
 import { renderAll, renderDash, renderMain } from './render.js';
 import { buildProfMultiList, loadPatientProfs, renderProfTags, saveProfLinks } from './comun.js';
+import { actions } from '../events.js';
 
 export async function loadPacientes() {
   const { data, error } = await sb.from(TABLE).select('*').order('created_at',{ascending:false});
@@ -15,7 +16,7 @@ export async function loadPacientes() {
   renderAll();
 }
 
-window.savePaciente = async function() {
+actions.savePaciente = async function() {
   if (!gv('apellido')||!gv('nombres')||!gv('dni')) { toast('Apellido, Nombres y DNI son obligatorios.','error'); return; }
   const payload={};
   DB_COLS.forEach(col=>{ payload[col]=gv(col)||null; });
@@ -34,12 +35,12 @@ window.savePaciente = async function() {
   btn.disabled=false; txt.textContent='Guardar Paciente';
   if (error) { toast(`Error: ${error.message}`,'error'); return; }
   if (savedId) await saveProfLinks(savedId);
-  window.closeForm(); await loadPacientes();
+  actions.closeForm(); await loadPacientes();
 };
 
-window.askDelete=function(id){ state.deleteId=id; document.getElementById('del-overlay').classList.add('open'); };
+actions.askDelete=function(id){ state.deleteId=id; document.getElementById('del-overlay').classList.add('open'); };
 
-window.confirmDelete=async function() {
+actions.confirmDelete=async function() {
   if (!state.deleteId) return;
   const btn=document.getElementById('btn-confirm-del');
   btn.disabled=true; btn.textContent='Eliminando…';
@@ -52,16 +53,16 @@ window.confirmDelete=async function() {
   const {error}=await sb.from(TABLE).delete().eq('id',state.deleteId);
   btn.disabled=false;
   btn.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" width="15" height="15"><polyline points="3,6 5,6 21,6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg> Eliminar`;
-  if (error) { toast(`Error: ${error.message}`,'error'); closeDel(); return; }
+  if (error) { toast(`Error: ${error.message}`,'error'); actions.closeDel(); return; }
   toast('Paciente eliminado.','info');
-  closeDel(); state.deleteId=null; await loadPacientes();
+  actions.closeDel(); state.deleteId=null; await loadPacientes();
 };
 
-window.onSearch=function(val){ state.searchQuery=val.trim().toLowerCase(); document.getElementById('s-clear').classList.toggle('show',!!state.searchQuery); state.page=1; applyFilters(); renderMain(); renderDash(); };
+actions.onSearch=function(val){ state.searchQuery=val.trim().toLowerCase(); document.getElementById('s-clear').classList.toggle('show',!!state.searchQuery); state.page=1; applyFilters(); renderMain(); renderDash(); };
 
-window.clearSearch=function(){ document.getElementById('search-input').value=''; window.onSearch(''); };
+actions.clearSearch=function(){ document.getElementById('search-input').value=''; actions.onSearch(''); };
 
-window.setChip=function(key,el){ document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active')); el.classList.add('active'); state.activeFilter=key; state.page=1; applyFilters(); renderMain(); };
+actions.setChip=function(key,el){ document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active')); el.classList.add('active'); state.activeFilter=key; state.page=1; applyFilters(); renderMain(); };
 
 export function applyFilters(){
   let list=[...state.pacientes];
@@ -72,7 +73,7 @@ export function applyFilters(){
   state.filteredList=list;
 }
 
-window.toggleActivo = async function(id, checked, inputEl){
+actions.toggleActivo = async function(id, checked, inputEl){
   inputEl.disabled = true;
   const { error } = await sb.from(TABLE).update({ activo: checked }).eq('id', id);
   inputEl.disabled = false;
@@ -84,7 +85,7 @@ window.toggleActivo = async function(id, checked, inputEl){
   toast(checked?'Paciente habilitado.':'Paciente deshabilitado.','success');
 };
 
-window.openForm=async function(id=null){
+actions.openForm=async function(id=null){
   state.editId=id||null;
   clearFormValues();
   state.selectedProfIds=[];
@@ -101,19 +102,19 @@ window.openForm=async function(id=null){
   document.getElementById('form-overlay').classList.add('open');
 };
 
-window.closeForm=function(){ document.getElementById('form-overlay').classList.remove('open'); state.editId=null; };
+actions.closeForm=function(){ document.getElementById('form-overlay').classList.remove('open'); state.editId=null; };
 
-window.openDet=function(id){ location.href='paciente.html?id='+id; };
+actions.openDet=function(id){ location.href='paciente.html?id='+id; };
 
-window.closeDet=function(){ document.getElementById('det-overlay')?.classList.remove('open'); };
+actions.closeDet=function(){ document.getElementById('det-overlay')?.classList.remove('open'); };
 
-window.closeDetIfBg=function(e){ if(e.target===document.getElementById('det-overlay')) window.closeDet(); };
+actions.closeDetIfBg=function(e){ if(e.target===document.getElementById('det-overlay')) actions.closeDet(); };
 
-window.closeDel=function(){ document.getElementById('del-overlay').classList.remove('open'); state.deleteId=null; };
+actions.closeDel=function(){ document.getElementById('del-overlay').classList.remove('open'); state.deleteId=null; };
 
-window.closeDelIfBg=function(e){ if(e.target===document.getElementById('del-overlay')) window.closeDel(); };
+actions.closeDelIfBg=function(e){ if(e.target===document.getElementById('del-overlay')) actions.closeDel(); };
 
-window.printCredencial = function(id) {
+actions.printCredencial = function(id) {
   const p = state.pacientes.find(x => x.id === id);
   if (!p) { toast('Paciente no encontrado', 'error'); return; }
 

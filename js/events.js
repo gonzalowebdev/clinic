@@ -24,7 +24,7 @@ function dispatch(type, ev) {
     const name = el.dataset[type];
     if (name && !(type === 'keydown' && el.dataset.keydownKey && ev.key !== el.dataset.keydownKey)) {
       if (builtins[name]) builtins[name](el);
-      else if (actions[name] || window[name]) (actions[name] || window[name])(...resolveArgs(el, type, ev));
+      else if (actions[name]) actions[name](...resolveArgs(el, type, ev));
       else console.warn('Acción no registrada:', name);
       if (ev.cancelBubble) break;
     }

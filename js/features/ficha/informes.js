@@ -6,8 +6,9 @@ import { attachUrl, signPaths } from '../../storage.js';
 import { fmtDate } from '../../forms.js';
 import { esc } from '../../utils.js';
 import { updateRptPreview } from '../comun.js';
+import { actions } from '../../events.js';
 
-window.openRptModal = function(pacienteId) {
+actions.openRptModal = function(pacienteId) {
   state.rptPacId = pacienteId; state.rptDays = 7;
   document.getElementById('rpt-modal-sub').textContent = state.paciente ? `Paciente: ${state.paciente.apellido}, ${state.paciente.nombres}` : '';
   document.querySelectorAll('.rpt-period-btn').forEach(b=>b.classList.remove('sel'));
@@ -21,7 +22,7 @@ window.openRptModal = function(pacienteId) {
   updateRptPreview();
 };
 
-window.generatePeriodReport = async function() {
+actions.generatePeriodReport = async function() {
   if (!state.rptPacId) return;
   if (!state.rptControles.length) { toast('No hay controles en el período seleccionado.','error'); return; }
   const p = state.paciente;
@@ -85,11 +86,11 @@ window.generatePeriodReport = async function() {
     </div>
     <div class="pr-footer">Clinic — Sistema de Gestión Clínica &nbsp;|&nbsp; ${fPrint} · ${hPrint}<br>Documento confidencial. Uso exclusivo del equipo médico tratante.</div>
   </div>`;
-  window.closeRpt();
+  actions.closeRpt();
   window.print();
 };
 
-window.printPaciente = function(id) {
+actions.printPaciente = function(id) {
   const p=state.paciente; if(!p) return;
   const now=new Date();
   const fPrint=now.toLocaleDateString('es-AR',{day:'2-digit',month:'long',year:'numeric'});

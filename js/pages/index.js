@@ -17,6 +17,7 @@ import '../features/usuarios.js';
 import '../features/app.js';
 import '../features/comun.js';
 import { initEvents } from '../events.js';
+import { actions } from '../events.js';
 
 initEvents();
 
@@ -56,7 +57,7 @@ sb.auth.onAuthStateChange(async (_e, session) => {
 
 document.getElementById('csv-source').addEventListener('change',()=>{ buildCsvCols(); updateCsvCount(); });
 
-document.addEventListener('keydown',e=>{ if(e.key==='Escape'){window.closeForm();window.closeDet();window.closeDel();window.closeLightbox();window.closeRpt();window.closeCsvModal();window.closeEntrada();window.closeProfForm();window.closeProfDet();window.closeUsrForm();} if((e.ctrlKey||e.metaKey)&&e.key==='n'){e.preventDefault();window.openForm();} });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'){actions.closeForm();actions.closeDet();actions.closeDel();actions.closeLightbox();actions.closeRpt();actions.closeCsvModal();actions.closeEntrada();actions.closeProfForm();actions.closeProfDet();actions.closeUsrForm();} if((e.ctrlKey||e.metaKey)&&e.key==='n'){e.preventDefault();actions.openForm();} });
 
 const s=document.createElement('style');
 

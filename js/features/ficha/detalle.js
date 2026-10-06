@@ -7,6 +7,7 @@ import { esc } from '../../utils.js';
 import { pacId } from './contexto.js';
 import { renderControlesList } from './controles.js';
 import { renderGallery } from '../adjuntos.js';
+import { actions } from '../../events.js';
 
 export async function boot(user) {
   const { data } = await sb.from(USR_TABLE).select('rol').eq('id', user.id).single();
@@ -44,11 +45,11 @@ async function renderPacienteDetail() {
   document.getElementById('pac-status-badge').className = `status-badge ${active ? 'active' : 'inactive'}`;
   document.getElementById('pac-status-input').checked = active;
 
-  document.getElementById('btn-det-edit').onclick   = () => window.openForm(p.id);
-  document.getElementById('btn-det-print').onclick  = () => window.printPaciente(p.id);
-  document.getElementById('btn-det-credencial').onclick = () => window.printCredencial(p.id);
-  document.getElementById('btn-det-rpt').onclick    = () => window.openRptModal(p.id);
-  document.getElementById('btn-det-entrada').onclick= () => window.openEntrada(p.id);
+  document.getElementById('btn-det-edit').onclick   = () => actions.openForm(p.id);
+  document.getElementById('btn-det-print').onclick  = () => actions.printPaciente(p.id);
+  document.getElementById('btn-det-credencial').onclick = () => actions.printCredencial(p.id);
+  document.getElementById('btn-det-rpt').onclick    = () => actions.openRptModal(p.id);
+  document.getElementById('btn-det-entrada').onclick= () => actions.openEntrada(p.id);
 
   const f=v=>esc(v)||'<span style="color:var(--text-muted)">—</span>';
   const note=(lbl,val,color='var(--accent)')=>`<div class="clin-note" style="border-left-color:${color}"><div class="clin-lbl" style="color:${color}">${lbl}</div><div class="clin-txt">${esc(val)||'<span style="color:var(--text-muted)">Sin datos registrados.</span>'}</div></div>`;
@@ -150,7 +151,7 @@ async function renderPacienteDetail() {
   await renderControlesList(p.id,ctrlListId);
 }
 
-window.toggleActivo = async function(checked, inputEl) {
+actions.toggleActivo = async function(checked, inputEl) {
   if (!state.paciente) return;
   inputEl.disabled = true;
   const { error } = await sb.from(TABLE).update({ activo: checked }).eq('id', state.paciente.id);
@@ -163,7 +164,7 @@ window.toggleActivo = async function(checked, inputEl) {
   toast(checked ? 'Paciente habilitado.' : 'Paciente deshabilitado.', 'success');
 };
 
-window.printCredencial = function(id) {
+actions.printCredencial = function(id) {
   const p = state.paciente; if (!p) { toast('Paciente no encontrado', 'error'); return; }
   const html = `
     <div class="credencial-wrapper">

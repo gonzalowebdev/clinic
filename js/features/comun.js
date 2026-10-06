@@ -4,6 +4,7 @@ import { C_TABLE, PP_TABLE, sb } from '../supabase.js';
 import { toast } from '../ui.js';
 import { fmtDate } from '../forms.js';
 import { esc } from '../utils.js';
+import { actions } from '../events.js';
 
 export async function loadControles(pacienteId) {
   const { data, error } = await sb
@@ -15,7 +16,7 @@ export async function loadControles(pacienteId) {
   return data || [];
 }
 
-window.selectPeriod = function(days, btn) {
+actions.selectPeriod = function(days, btn) {
   state.rptDays = days;
   document.querySelectorAll('.rpt-period-btn').forEach(b=>b.classList.remove('sel'));
   btn.classList.add('sel');
@@ -32,7 +33,7 @@ window.selectPeriod = function(days, btn) {
   }
 };
 
-window.applyCustomPeriod = function() {
+actions.applyCustomPeriod = function() {
   state.rptFrom = document.getElementById('rpt-from').value;
   state.rptTo   = document.getElementById('rpt-to').value;
   if (!state.rptFrom || !state.rptTo) { toast('Seleccioná ambas fechas.','error'); return; }
@@ -61,23 +62,23 @@ export async function updateRptPreview() {
   textEl.textContent = `Del ${f1} al ${f2}${n===0?' — Sin controles en ese período':''}`;
 }
 
-window.closeRpt=function(){ document.getElementById('rpt-overlay').classList.remove('open'); };
+actions.closeRpt=function(){ document.getElementById('rpt-overlay').classList.remove('open'); };
 
-window.closeRptIfBg=function(e){ if(e.target===document.getElementById('rpt-overlay')) window.closeRpt(); };
+actions.closeRptIfBg=function(e){ if(e.target===document.getElementById('rpt-overlay')) actions.closeRpt(); };
 
-window.closeFormIfBg=function(e){ if(e.target===document.getElementById('form-overlay')) window.closeForm(); };
+actions.closeFormIfBg=function(e){ if(e.target===document.getElementById('form-overlay')) actions.closeForm(); };
 
-window.closeEntrada = function() {
+actions.closeEntrada = function() {
   document.getElementById('entrada-overlay').classList.remove('open');
   state.entradaPacId    = null;
   state.entradaImgFiles = [];
 };
 
-window.closeEntradaIfBg = function(e) {
-  if (e.target === document.getElementById('entrada-overlay')) window.closeEntrada();
+actions.closeEntradaIfBg = function(e) {
+  if (e.target === document.getElementById('entrada-overlay')) actions.closeEntrada();
 };
 
-window.togglePdfImg = function(i, val) {
+actions.togglePdfImg = function(i, val) {
   if (state.entradaImgFiles[i]) {
     state.entradaImgFiles[i].incluirPdf = val;
     const tog = document.getElementById(`pdf-toggle-${i}`);
@@ -85,7 +86,7 @@ window.togglePdfImg = function(i, val) {
   }
 };
 
-window.switchTab=function(name,el){ document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); document.querySelectorAll('.tab-pane').forEach(t=>t.classList.remove('active')); el.classList.add('active'); document.getElementById('tab-'+name).classList.add('active'); };
+actions.switchTab=function(name,el){ document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); document.querySelectorAll('.tab-pane').forEach(t=>t.classList.remove('active')); el.classList.add('active'); document.getElementById('tab-'+name).classList.add('active'); };
 
 export function buildProfMultiList(filter='') {
   const list = document.getElementById('prof-multi-list');
@@ -110,9 +111,9 @@ export function buildProfMultiList(filter='') {
   }).join('');
 }
 
-window.filterProfMulti = function(val) { buildProfMultiList(val); };
+actions.filterProfMulti = function(val) { buildProfMultiList(val); };
 
-window.toggleProfSel = function(profId, checked) {
+actions.toggleProfSel = function(profId, checked) {
   if (checked && !state.selectedProfIds.includes(profId)) state.selectedProfIds.push(profId);
   else if (!checked) state.selectedProfIds = state.selectedProfIds.filter(x=>x!==profId);
   // Update item style
@@ -159,8 +160,8 @@ export async function saveProfLinks(pacienteId) {
 }
 
 // Quita un profesional del formulario: lo deselecciona y destilda su casilla.
-window.deselectProf = function(id) {
-  window.toggleProfSel(id, false);
+actions.deselectProf = function(id) {
+  actions.toggleProfSel(id, false);
   const cb = document.querySelector(`#pmi-${id} input`);
   if (cb) cb.checked = false;
 };

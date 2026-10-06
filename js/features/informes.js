@@ -7,8 +7,9 @@ import { attachUrl, signPaths } from '../storage.js';
 import { fmtDate } from '../forms.js';
 import { esc } from '../utils.js';
 import { updateRptPreview } from './comun.js';
+import { actions } from '../events.js';
 
-window.openRptModal = function(pacienteId) {
+actions.openRptModal = function(pacienteId) {
   state.rptPacId = pacienteId;
   state.rptDays  = 7;
   const p = state.pacientes.find(x=>x.id===pacienteId);
@@ -26,7 +27,7 @@ window.openRptModal = function(pacienteId) {
   updateRptPreview();
 };
 
-window.generatePeriodReport = async function() {
+actions.generatePeriodReport = async function() {
   if (!state.rptPacId) return;
   if (!state.rptControles.length) { toast('No hay controles en el período seleccionado.','error'); return; }
   const p = state.pacientes.find(x=>x.id===state.rptPacId);
@@ -114,12 +115,12 @@ window.generatePeriodReport = async function() {
     <div class="pr-footer">Clinic — Sistema de Gestión Clínica &nbsp;|&nbsp; ${fPrint} · ${hPrint}<br>Documento confidencial. Uso exclusivo del equipo médico tratante.</div>
   </div>`;
 
-  closeRpt();
+  actions.closeRpt();
   window.print();
 };
 
 /* Informe simple de ficha (botón "Imprimir ficha") */
-window.printPaciente = function(id) {
+actions.printPaciente = function(id) {
   const p=state.pacientes.find(x=>x.id===id); if(!p) return;
   const now=new Date();
   const fPrint=now.toLocaleDateString('es-AR',{day:'2-digit',month:'long',year:'numeric'});
@@ -171,15 +172,15 @@ window.printPaciente = function(id) {
   window.print();
 };
 
-window.openCsvModal = function() {
+actions.openCsvModal = function() {
   buildCsvCols();
   document.getElementById('csv-overlay').classList.add('open');
   updateCsvCount();
 };
 
-window.closeCsvModal=function(){ document.getElementById('csv-overlay').classList.remove('open'); };
+actions.closeCsvModal=function(){ document.getElementById('csv-overlay').classList.remove('open'); };
 
-window.closeCsvIfBg=function(e){ if(e.target===document.getElementById('csv-overlay')) window.closeCsvModal(); };
+actions.closeCsvIfBg=function(e){ if(e.target===document.getElementById('csv-overlay')) actions.closeCsvModal(); };
 
 export function buildCsvCols() {
   const source = document.getElementById('csv-source').value;
@@ -199,9 +200,9 @@ export function updateCsvCount() {
   document.getElementById('csv-row-count').textContent=`${n} fila${n!==1?'s':''}`;
 }
 
-window.csvSelectAll=function(val){ document.querySelectorAll('#csv-cols-container input[type=checkbox]').forEach(c=>{ c.checked=val; }); };
+actions.csvSelectAll=function(val){ document.querySelectorAll('#csv-cols-container input[type=checkbox]').forEach(c=>{ c.checked=val; }); };
 
-window.doExportCSV = async function() {
+actions.doExportCSV = async function() {
   const source = document.getElementById('csv-source').value;
   const checked = Array.from(document.querySelectorAll('#csv-cols-container input:checked')).map(i=>i.value);
   if (!checked.length) { toast('Seleccioná al menos una columna.','error'); return; }
@@ -237,8 +238,8 @@ window.doExportCSV = async function() {
   a.download=`${source}_${new Date().toISOString().slice(0,10)}.csv`;
   a.click();
   toast('CSV descargado.','success');
-  closeCsvModal();
+  actions.closeCsvModal();
 };
 
 // Antes el onchange inline no podía llamarla (función de módulo, no global).
-window.updateCsvCount = updateCsvCount;
+actions.updateCsvCount = updateCsvCount;

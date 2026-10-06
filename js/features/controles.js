@@ -6,8 +6,9 @@ import { attachUrl, signPaths } from '../storage.js';
 import { fmtDate } from '../forms.js';
 import { esc } from '../utils.js';
 import { loadControles } from './comun.js';
+import { actions } from '../events.js';
 
-window.saveControl = async function(pacienteId, containerId) {
+actions.saveControl = async function(pacienteId, containerId) {
   const fecha = document.getElementById('ctrl-fecha').value;
   if (!fecha) { toast('La fecha del control es obligatoria.','error'); return; }
   const payload = {
@@ -32,7 +33,7 @@ window.saveControl = async function(pacienteId, containerId) {
   await renderControlesList(pacienteId, containerId);
 };
 
-window.deleteControl = async function(controlId, pacienteId, containerId) {
+actions.deleteControl = async function(controlId, pacienteId, containerId) {
   if (!confirm('¿Eliminar este control? También se eliminarán sus imágenes.')) return;
   // Delete images from storage first
   const { data: imgs } = await sb.from(CI_TABLE).select('storage_path').eq('control_id', controlId);
@@ -43,7 +44,7 @@ window.deleteControl = async function(controlId, pacienteId, containerId) {
   await renderControlesList(pacienteId, containerId);
 };
 
-window.deleteCtrlImg = async function(imgId, storagePath, pacienteId, containerId) {
+actions.deleteCtrlImg = async function(imgId, storagePath, pacienteId, containerId) {
   if (!confirm('¿Eliminar esta imagen?')) return;
   await sb.storage.from(BUCKET).remove([storagePath]);
   await sb.from(CI_TABLE).delete().eq('id', imgId);
@@ -114,7 +115,7 @@ async function renderControlesList(pacienteId, containerId) {
   }).join('');
 }
 
-window.openEntrada = function(pacienteId) {
+actions.openEntrada = function(pacienteId) {
   state.entradaPacId    = pacienteId;
   state.entradaImgFiles = [];
   const p = state.pacientes.find(x => x.id === pacienteId);
@@ -141,7 +142,7 @@ window.openEntrada = function(pacienteId) {
 };
 
 /* Previsualiza imágenes antes de subir — con checkbox "incluir en PDF" */
-window.previewEntradaImages = function(input) {
+actions.previewEntradaImages = function(input) {
   const files = Array.from(input.files).filter(f => /\.(jpe?g|png|gif|webp|heic|heif)$/i.test(f.name));
   if (!files.length) return;
 
@@ -172,13 +173,13 @@ function renderEntradaPreview() {
   }).join('');
 }
 
-window.removeEntradaImg = function(i) {
+actions.removeEntradaImg = function(i) {
   state.entradaImgFiles.splice(i, 1);
   renderEntradaPreview();
 };
 
 /* Guarda la entrada: inserta en controles, sube imágenes a Storage, guarda refs en control_imagenes */
-window.saveEntrada = async function() {
+actions.saveEntrada = async function() {
   const fecha = document.getElementById('e-fecha').value;
   if (!fecha) { toast('La fecha es obligatoria.', 'error'); return; }
   if (!state.entradaPacId) return;
@@ -243,5 +244,5 @@ window.saveEntrada = async function() {
 
   btn.disabled = false; txt.textContent = 'Guardar entrada';
   toast('Entrada guardada correctamente.', 'success');
-  window.closeEntrada();
+  actions.closeEntrada();
 };

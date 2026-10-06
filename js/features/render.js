@@ -3,6 +3,7 @@ import { state } from '../state.js';
 import { ICO_DEL, ICO_DOC, ICO_EDIT, ICO_EYE, ICO_FLASK, ICO_USERS, PER, TAGS } from '../constants.js';
 import { esc } from '../utils.js';
 import { applyFilters } from './pacientes.js';
+import { actions } from '../events.js';
 
 export function renderAll(){ applyFilters(); updateStats(); renderDash(); renderMain(); renderHistoria(); renderEstudios(); document.getElementById('badge-total').textContent=state.pacientes.length; }
 
@@ -66,7 +67,7 @@ function renderPagination(pages,total){
   h+=arr('n',state.page+1); c.innerHTML=h;
 }
 
-window.goPage=function(n){ const pages=Math.max(1,Math.ceil(state.filteredList.length/PER)); if(n<1||n>pages) return; state.page=n; renderMain(); };
+actions.goPage=function(n){ const pages=Math.max(1,Math.ceil(state.filteredList.length/PER)); if(n<1||n>pages) return; state.page=n; renderMain(); };
 
 export function renderHistoria(){ const list=state.pacientes.filter(p=>p.historia_clinica||p.epicrisis||p.diagnostico_medico),tb=document.getElementById('hist-tbody'); tb.innerHTML=!list.length?emptyRow(5,ICO_DOC,'Sin historias clínicas','Completá la historia clínica al editar un paciente'):list.map(p=>`<tr><td class="td-p">${esc(p.apellido)}, ${esc(p.nombres)}</td><td style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;">${esc(p.historia_clinica)||'—'}</td><td style="max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;">${esc(p.epicrisis)||'—'}</td><td style="max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;">${esc(p.diagnostico_medico)||'—'}</td><td><button class="ic-btn ic-btn-blue" data-click="openDet" data-click-args="${esc(JSON.stringify([p.id]))}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">${ICO_EYE}</svg></button></td></tr>`).join(''); }
 

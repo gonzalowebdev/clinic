@@ -1,6 +1,7 @@
 // Autenticación y sesión.
 import { state } from '../state.js';
 import { USR_TABLE, sb } from '../supabase.js';
+import { actions } from '../events.js';
 
 export async function loadUserRole(uid) {
   const { data } = await sb.from(USR_TABLE).select('rol,nombre').eq('id', uid).single();
@@ -26,7 +27,7 @@ export function showApp(user) {
   document.getElementById('user-av').textContent = email.slice(0,2).toUpperCase();
 }
 
-window.doLogin = async function() {
+actions.doLogin = async function() {
   const email = document.getElementById('l-email').value.trim();
   const pw    = document.getElementById('l-pw').value;
   let ok = true;
@@ -43,7 +44,7 @@ window.doLogin = async function() {
   }
 };
 
-window.doLogout = async function() { await sb.auth.signOut(); state.pacientes=[]; };
+actions.doLogout = async function() { await sb.auth.signOut(); state.pacientes=[]; };
 
 function setBtnState(l) {
   document.getElementById('btn-login').disabled=l;
@@ -54,8 +55,8 @@ function setBtnState(l) {
 
 function showFErr(f,msg) { document.getElementById(`l-err-${f}-txt`).textContent=msg; document.getElementById(`l-err-${f}`).classList.add('show'); }
 
-window.loginClearErr=function(){ ['email','pw'].forEach(f=>document.getElementById(`l-err-${f}`).classList.remove('show')); document.getElementById('login-alert').classList.remove('show'); };
+actions.loginClearErr=function(){ ['email','pw'].forEach(f=>document.getElementById(`l-err-${f}`).classList.remove('show')); document.getElementById('login-alert').classList.remove('show'); };
 
 function shakePanel() { const p=document.querySelector('.lc-right'); p.style.animation='shake .4s ease'; setTimeout(()=>p.style.animation='',400); }
 
-window.togglePw=function() { const i=document.getElementById('l-pw'),on=i.type==='password'; i.type=on?'text':'password'; document.getElementById('ico-eye').style.display=on?'none':''; document.getElementById('ico-eye-off').style.display=on?'':'none'; };
+actions.togglePw=function() { const i=document.getElementById('l-pw'),on=i.type==='password'; i.type=on?'text':'password'; document.getElementById('ico-eye').style.display=on?'none':''; document.getElementById('ico-eye-off').style.display=on?'':'none'; };

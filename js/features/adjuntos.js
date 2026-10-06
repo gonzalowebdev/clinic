@@ -2,6 +2,7 @@
 import { toast } from '../ui.js';
 import { attachUrl, deleteAttachment, loadAttachments, signPaths, uploadAttachment } from '../storage.js';
 import { esc } from '../utils.js';
+import { actions } from '../events.js';
 
 export async function renderGallery(pid,cid){
   const cont=document.getElementById(cid);
@@ -20,9 +21,9 @@ export async function renderGallery(pid,cid){
   cont.innerHTML=`<div class="gallery">${items.join('')}</div>`;
 }
 
-window.removeAttach=async function(path,pid,cid){ if(!confirm('¿Eliminar este adjunto?')) return; try{ await deleteAttachment(path); toast('Adjunto eliminado.','info'); await renderGallery(pid,cid); }catch(e){ toast(`Error: ${e.message}`,'error'); } };
+actions.removeAttach=async function(path,pid,cid){ if(!confirm('¿Eliminar este adjunto?')) return; try{ await deleteAttachment(path); toast('Adjunto eliminado.','info'); await renderGallery(pid,cid); }catch(e){ toast(`Error: ${e.message}`,'error'); } };
 
-window.handleFileUpload=async function(input,pid,cid){
+actions.handleFileUpload=async function(input,pid,cid){
   const files=Array.from(input.files); if(!files.length) return;
   const allowed=files.filter(f=>/\.(jpe?g|png|gif|webp|heic|heif|pdf)$/i.test(f.name));
   if(allowed.length!==files.length) toast('Solo imágenes y PDF.','error');
@@ -40,6 +41,6 @@ window.handleFileUpload=async function(input,pid,cid){
   await renderGallery(pid,cid);
 };
 
-window.openLightbox=function(url){ document.getElementById('lightbox-img').src=url; document.getElementById('lightbox').classList.add('open'); };
+actions.openLightbox=function(url){ document.getElementById('lightbox-img').src=url; document.getElementById('lightbox').classList.add('open'); };
 
-window.closeLightbox=function(){ document.getElementById('lightbox').classList.remove('open'); };
+actions.closeLightbox=function(){ document.getElementById('lightbox').classList.remove('open'); };

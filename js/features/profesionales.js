@@ -6,6 +6,7 @@ import { toast } from '../ui.js';
 import { esc } from '../utils.js';
 import { emptyRow } from './render.js';
 import { buildProfMultiList } from './comun.js';
+import { actions } from '../events.js';
 
 export async function loadProfesionales() {
   const { data, error } = await sb.from(P_TABLE).select('*').order('apellido');
@@ -56,7 +57,7 @@ async function loadProfPacCount(profId) {
   if (el) el.textContent = `${count||0} pac.`;
 }
 
-window.openProfForm = function(id=null) {
+actions.openProfForm = function(id=null) {
   if (!state.isAdmin) return;
   state.editProfId = id || null;
   ['pf-apellido','pf-nombres','pf-especialidad','pf-matricula','pf-telefono','pf-mail','pf-domicilio','pf-ciudad','pf-observaciones']
@@ -79,11 +80,11 @@ window.openProfForm = function(id=null) {
   document.getElementById('prof-form-overlay').classList.add('open');
 };
 
-window.closeProfForm = function() { document.getElementById('prof-form-overlay').classList.remove('open'); state.editProfId=null; };
+actions.closeProfForm = function() { document.getElementById('prof-form-overlay').classList.remove('open'); state.editProfId=null; };
 
-window.closeProfFormIfBg = function(e) { if(e.target===document.getElementById('prof-form-overlay')) window.closeProfForm(); };
+actions.closeProfFormIfBg = function(e) { if(e.target===document.getElementById('prof-form-overlay')) actions.closeProfForm(); };
 
-window.saveProfesional = async function() {
+actions.saveProfesional = async function() {
   if (!state.isAdmin) return;
   const apellido = document.getElementById('pf-apellido').value.trim();
   const nombres  = document.getElementById('pf-nombres').value.trim();
@@ -106,12 +107,12 @@ window.saveProfesional = async function() {
   btn.disabled=false; txt.textContent='Guardar';
   if (error) { toast(`Error: ${error.message}`,'error'); return; }
   toast(state.editProfId?'Profesional actualizado.':'Profesional registrado.','success');
-  window.closeProfForm();
+  actions.closeProfForm();
   await loadProfesionales();
   renderProfesionales();
 };
 
-window.deleteProfesional = async function(id) {
+actions.deleteProfesional = async function(id) {
   if (!state.isAdmin) return;
   if (!confirm('¿Eliminar este profesional? Se desvinculará de todos sus pacientes.')) return;
   await sb.from(PP_TABLE).delete().eq('profesional_id',id);
@@ -122,8 +123,8 @@ window.deleteProfesional = async function(id) {
   renderProfesionales();
 };
 
-window.openProfDet = function(id) { location.href='profesional.html?id='+id; };
+actions.openProfDet = function(id) { location.href='profesional.html?id='+id; };
 
-window.closeProfDet=function(){ document.getElementById('prof-det-overlay')?.classList.remove('open'); };
+actions.closeProfDet=function(){ document.getElementById('prof-det-overlay')?.classList.remove('open'); };
 
-window.closeProfDetIfBg=function(e){ if(e.target===document.getElementById('prof-det-overlay')) window.closeProfDet(); };
+actions.closeProfDetIfBg=function(e){ if(e.target===document.getElementById('prof-det-overlay')) actions.closeProfDet(); };
