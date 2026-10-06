@@ -835,6 +835,7 @@ async function renderControlesList(pacienteId, containerId) {
     const { data: imgs } = await sb.from(CI_TABLE).select('*').eq('control_id', c.id);
     imgMap[c.id] = imgs || [];
   }
+  await signPaths(Object.values(imgMap).flat().map(i=>i.storage_path));
 
   cont.innerHTML = list.map(c => {
     const d = new Date(c.fecha + 'T00:00:00').toLocaleDateString('es-AR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
@@ -961,6 +962,7 @@ window.generatePeriodReport = async function() {
     const { data: imgs } = await sb.from(CI_TABLE).select('*').eq('control_id', c.id).eq('incluir_pdf', true);
     imgMap[c.id] = imgs || [];
   }
+  await signPaths(Object.values(imgMap).flat().map(i=>i.storage_path));
 
   const now = new Date();
   const fPrint = now.toLocaleDateString('es-AR',{day:'2-digit',month:'long',year:'numeric'});
@@ -1173,13 +1175,24 @@ window.doExportCSV = async function() {
 ══════════════════════════════ */
 async function loadAttachments(pid){ const{data,error}=await sb.storage.from(BUCKET).list(pid,{sortBy:{column:'created_at',order:'asc'}}); if(error) return []; return data||[]; }
 async function uploadAttachment(pid,file){ const name=`${Date.now()}_${file.name.replace(/[^a-zA-Z0-9._-]/g,'_')}`; const path=`${pid}/${name}`; const{error}=await sb.storage.from(BUCKET).upload(path,file,{upsert:false,contentType:file.type}); if(error) throw error; return path; }
-function attachUrl(path){ const{data}=sb.storage.from(BUCKET).getPublicUrl(path); return data.publicUrl; }
+// Bucket privado: las URLs se firman (1 h) antes de renderizar y se leen de forma síncrona desde la caché.
+const urlCache = new Map();
+async function signPaths(paths){
+  const now = Date.now();
+  const need = [...new Set(paths)].filter(p => p && !(urlCache.get(p) && urlCache.get(p).exp > now));
+  if (!need.length) return;
+  const { data, error } = await sb.storage.from(BUCKET).createSignedUrls(need, 3600);
+  if (error || !data) return;
+  data.forEach(d => { if (d.signedUrl) urlCache.set(d.path, { url: d.signedUrl, exp: now + 3300000 }); });
+}
+function attachUrl(path){ const e = urlCache.get(path); return e ? e.url : ''; }
 async function deleteAttachment(path){ const{error}=await sb.storage.from(BUCKET).remove([path]); if(error) throw error; }
 
 async function renderGallery(pid,cid){
   const cont=document.getElementById(cid);
   cont.innerHTML='<p style="font-size:12px;color:var(--text-muted)">Cargando…</p>';
   const files=await loadAttachments(pid);
+  await signPaths(files.map(f=>`${pid}/${f.name}`));
   if(!files.length){ cont.innerHTML='<p style="font-size:12px;color:var(--text-muted)">Sin adjuntos todavía.</p>'; return; }
   const items=files.map(f=>{
     const path=`${pid}/${f.name}`,url=attachUrl(path),isImg=/\.(jpe?g|png|gif|webp|heic|heif)$/i.test(f.name);

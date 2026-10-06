@@ -75,6 +75,8 @@ create table if not exists public.controles (
   observaciones       text,
   otros_profesionales text,
   otros               text,
+  responsable         text,
+  turno               text,
   created_at          timestamptz not null default now()
 );
 create index if not exists controles_paciente_fecha_idx on public.controles (paciente_id, fecha desc);
