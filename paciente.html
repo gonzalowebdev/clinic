@@ -267,6 +267,7 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 
 /* ── CONFIG ── */
 import { SUPABASE_URL, SUPABASE_ANON } from './js/config.js';
+import { esc } from './js/utils.js';
 const TABLE   = 'pacientes';
 const C_TABLE = 'controles';
 const CI_TABLE= 'control_imagenes';
@@ -367,8 +368,8 @@ async function renderPacienteDetail() {
   document.getElementById('btn-det-rpt').onclick    = () => window.openRptModal(p.id);
   document.getElementById('btn-det-entrada').onclick= () => window.openEntrada(p.id);
 
-  const f=v=>v||'<span style="color:var(--text-muted)">—</span>';
-  const note=(lbl,val,color='var(--accent)')=>`<div class="clin-note" style="border-left-color:${color}"><div class="clin-lbl" style="color:${color}">${lbl}</div><div class="clin-txt">${val||'<span style="color:var(--text-muted)">Sin datos registrados.</span>'}</div></div>`;
+  const f=v=>esc(v)||'<span style="color:var(--text-muted)">—</span>';
+  const note=(lbl,val,color='var(--accent)')=>`<div class="clin-note" style="border-left-color:${color}"><div class="clin-lbl" style="color:${color}">${lbl}</div><div class="clin-txt">${esc(val)||'<span style="color:var(--text-muted)">Sin datos registrados.</span>'}</div></div>`;
   const galleryId=`gallery-${p.id}`, ctrlListId=`ctrl-list-${p.id}`;
 
   const {data:links}=await sb.from(PP_TABLE).select('profesional_id, profesionales(id,apellido,nombres,especialidad,matricula,telefono)').eq('paciente_id',p.id);
@@ -376,8 +377,8 @@ async function renderPacienteDetail() {
   const profsHtml = profsAsig.length
     ? `<div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;">${profsAsig.map(pr=>`
         <span style="display:inline-flex;align-items:center;gap:6px;background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.2);border-radius:20px;padding:4px 12px 4px 8px;">
-          <div class="prof-avatar" style="width:22px;height:22px;border-radius:5px;font-size:9px;">${((pr.apellido||'')[0]||'').toUpperCase()}</div>
-          <span class="prof-link" style="font-size:12.5px;color:#34d399;" onclick="location.href='profesional.html?id=${pr.id}'">${pr.apellido}, ${pr.nombres}${pr.especialidad?' · '+pr.especialidad:''}</span>
+          <div class="prof-avatar" style="width:22px;height:22px;border-radius:5px;font-size:9px;">${((esc(pr.apellido)||'')[0]||'').toUpperCase()}</div>
+          <span class="prof-link" style="font-size:12.5px;color:#34d399;" onclick="location.href='profesional.html?id=${pr.id}'">${esc(pr.apellido)}, ${esc(pr.nombres)}${esc(pr.especialidad)?' · '+esc(pr.especialidad):''}</span>
         </span>`).join('')}</div>`
     : '<span style="color:var(--text-muted);font-size:13px;">Sin profesionales asignados</span>';
 
@@ -399,7 +400,7 @@ async function renderPacienteDetail() {
         <div class="info-item"><div class="info-lbl">Contacto Familia</div><div class="info-val">${f(p.contacto_familia)}</div></div>
         <div class="info-item"><div class="info-lbl">Médico Tratante</div><div class="info-val">${f(p.medico_tratante)}</div></div>
         <div class="info-item"><div class="info-lbl">Patología</div><div class="info-val">${f(p.patologia)}</div></div>
-        <div class="info-item"><div class="info-lbl">Pat. 1 / 2</div><div class="info-val">${[p.patologia1,p.patologia2].filter(Boolean).join(' · ')||'—'}</div></div>
+        <div class="info-item"><div class="info-lbl">Pat. 1 / 2</div><div class="info-val">${[esc(p.patologia1),esc(p.patologia2)].filter(Boolean).join(' · ')||'—'}</div></div>
       </div>
       <div style="margin-top:14px;">
         <div style="font-size:9.5px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:8px;">Profesionales Asignados</div>
@@ -531,8 +532,8 @@ function buildProfMultiList(filter='') {
     return `<label class="prof-multi-item ${sel?'selected':''}" id="pmi-${p.id}">
       <input type="checkbox" ${sel?'checked':''} onchange="toggleProfSel('${p.id}',this.checked)">
       <div>
-        <div style="font-weight:500;color:var(--text)">${p.apellido}, ${p.nombres}</div>
-        ${p.especialidad?`<div style="font-size:11px;color:var(--text-muted)">${p.especialidad}</div>`:''}
+        <div style="font-weight:500;color:var(--text)">${esc(p.apellido)}, ${esc(p.nombres)}</div>
+        ${esc(p.especialidad)?`<div style="font-size:11px;color:var(--text-muted)">${esc(p.especialidad)}</div>`:''}
       </div>
     </label>`;
   }).join('');
@@ -552,8 +553,8 @@ function renderProfTags() {
     const p = profesionales.find(x=>x.id===id);
     if (!p) return '';
     const label = `${p.apellido}, ${p.nombres}${p.especialidad?' · '+p.especialidad:''}`;
-    return `<span class="prof-tag" title="${label}">
-      <span class="prof-tag-txt">${label}</span>
+    return `<span class="prof-tag" title="${esc(label)}">
+      <span class="prof-tag-txt">${esc(label)}</span>
       <button onclick="toggleProfSel('${id}',false);const cb=document.querySelector('#pmi-${id} input');if(cb){cb.checked=false;}" title="Quitar">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
       </button>
@@ -630,14 +631,14 @@ async function renderControlesList(pacienteId, containerId) {
   await signPaths(Object.values(imgMap).flat().map(i=>i.storage_path));
   cont.innerHTML = list.map(c => {
     const d = new Date(c.fecha + 'T00:00:00').toLocaleDateString('es-AR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
-    const meta = [c.responsable, c.turno].filter(Boolean).join(' · ');
+    const meta = [c.responsable, c.turno].filter(Boolean).map(esc).join(' · ');
     const fields = [
-      c.enfermeria && `<div class="ctrl-field"><strong>Enfermería</strong>${c.enfermeria}</div>`,
-      c.kinesiologia && `<div class="ctrl-field"><strong>Kinesiología</strong>${c.kinesiologia}</div>`,
-      c.diagnostico_medico && `<div class="ctrl-field"><strong>Diagnóstico / Evolución</strong>${c.diagnostico_medico}</div>`,
-      c.observaciones && `<div class="ctrl-field"><strong>Observaciones</strong>${c.observaciones}</div>`,
-      c.otros_profesionales && `<div class="ctrl-field"><strong>Otros Profesionales</strong>${c.otros_profesionales}</div>`,
-      c.otros && `<div class="ctrl-field"><strong>Otros</strong>${c.otros}</div>`,
+      esc(c.enfermeria) && `<div class="ctrl-field"><strong>Enfermería</strong>${esc(c.enfermeria)}</div>`,
+      esc(c.kinesiologia) && `<div class="ctrl-field"><strong>Kinesiología</strong>${esc(c.kinesiologia)}</div>`,
+      esc(c.diagnostico_medico) && `<div class="ctrl-field"><strong>Diagnóstico / Evolución</strong>${esc(c.diagnostico_medico)}</div>`,
+      esc(c.observaciones) && `<div class="ctrl-field"><strong>Observaciones</strong>${esc(c.observaciones)}</div>`,
+      esc(c.otros_profesionales) && `<div class="ctrl-field"><strong>Otros Profesionales</strong>${esc(c.otros_profesionales)}</div>`,
+      esc(c.otros) && `<div class="ctrl-field"><strong>Otros</strong>${esc(c.otros)}</div>`,
     ].filter(Boolean).join('');
     const imgs = imgMap[c.id] || [];
     const imgHtml = imgs.length ? `
@@ -647,8 +648,8 @@ async function renderControlesList(pacienteId, containerId) {
           ${imgs.map(img => {
             const url = attachUrl(img.storage_path);
             return `<div class="gallery-item" style="position:relative;">
-              <img src="${url}" alt="${img.nombre}" onclick="openLightbox('${url}')" loading="lazy">
-              <div class="attach-name">${img.nombre}</div>
+              <img src="${url}" alt="${esc(img.nombre)}" onclick="openLightbox('${url}')" loading="lazy">
+              <div class="attach-name">${esc(img.nombre)}</div>
               ${img.incluir_pdf ? '<div style="position:absolute;top:3px;left:3px;background:rgba(20,166,150,.85);border-radius:3px;padding:1px 5px;font-size:8px;color:#fff;">PDF</div>' : ''}
               <button class="del-attach" onclick="deleteCtrlImg('${img.id}','${img.storage_path}','${pacienteId}','${containerId}')" title="Eliminar">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
@@ -732,16 +733,16 @@ window.generatePeriodReport = async function() {
   const hPrint = now.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'});
   const f1 = new Date(rptFrom+'T00:00:00').toLocaleDateString('es-AR',{day:'2-digit',month:'long',year:'numeric'});
   const f2 = new Date(rptTo+'T00:00:00').toLocaleDateString('es-AR',{day:'2-digit',month:'long',year:'numeric'});
-  const fld=(lbl,val)=>`<div class="pr-field"><div class="pr-field-lbl">${lbl}</div><div class="pr-field-val">${val||'<span class="pr-no-data">—</span>'}</div></div>`;
+  const fld=(lbl,val)=>`<div class="pr-field"><div class="pr-field-lbl">${lbl}</div><div class="pr-field-val">${esc(val)||'<span class="pr-no-data">—</span>'}</div></div>`;
   const ctrlHtml = rptControles.map((c,i) => {
     const d=new Date(c.fecha+'T00:00:00').toLocaleDateString('es-AR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
-    const meta = [c.responsable, c.turno].filter(Boolean).join(' · ');
+    const meta = [c.responsable, c.turno].filter(Boolean).map(esc).join(' · ');
     const imgs = imgMap[c.id] || [];
     const imgSection = imgs.length ? `
       <div style="margin-top:8px;">
         <div style="font-size:7.5pt;text-transform:uppercase;letter-spacing:.5px;color:#556070;margin-bottom:4px;">Imágenes del control (${imgs.length})</div>
         <div class="pr-img-grid">
-          ${imgs.map(img=>`<div class="pr-img-item"><img src="${attachUrl(img.storage_path)}" alt="${img.nombre}"><div class="pr-img-caption">${img.nombre}</div></div>`).join('')}
+          ${imgs.map(img=>`<div class="pr-img-item"><img src="${attachUrl(img.storage_path)}" alt="${esc(img.nombre)}"><div class="pr-img-caption">${esc(img.nombre)}</div></div>`).join('')}
         </div>
       </div>` : '';
     return `<div class="pr-ctrl-entry">
@@ -751,12 +752,12 @@ window.generatePeriodReport = async function() {
         ${meta ? `<span style="font-size:8pt;color:#556070;">${meta}</span>` : ''}
       </div>
       <div class="pr-ctrl-grid">
-        ${c.enfermeria?`<div class="pr-ctrl-field"><div class="pr-ctrl-field-lbl">Enfermería</div>${c.enfermeria}</div>`:''}
-        ${c.kinesiologia?`<div class="pr-ctrl-field"><div class="pr-ctrl-field-lbl">Kinesiología</div>${c.kinesiologia}</div>`:''}
-        ${c.diagnostico_medico?`<div class="pr-ctrl-field"><div class="pr-ctrl-field-lbl">Diagnóstico / Evolución</div>${c.diagnostico_medico}</div>`:''}
-        ${c.observaciones?`<div class="pr-ctrl-field"><div class="pr-ctrl-field-lbl">Observaciones</div>${c.observaciones}</div>`:''}
-        ${c.otros_profesionales?`<div class="pr-ctrl-field"><div class="pr-ctrl-field-lbl">Otros Profesionales</div>${c.otros_profesionales}</div>`:''}
-        ${c.otros?`<div class="pr-ctrl-field"><div class="pr-ctrl-field-lbl">Otros</div>${c.otros}</div>`:''}
+        ${esc(c.enfermeria)?`<div class="pr-ctrl-field"><div class="pr-ctrl-field-lbl">Enfermería</div>${esc(c.enfermeria)}</div>`:''}
+        ${esc(c.kinesiologia)?`<div class="pr-ctrl-field"><div class="pr-ctrl-field-lbl">Kinesiología</div>${esc(c.kinesiologia)}</div>`:''}
+        ${esc(c.diagnostico_medico)?`<div class="pr-ctrl-field"><div class="pr-ctrl-field-lbl">Diagnóstico / Evolución</div>${esc(c.diagnostico_medico)}</div>`:''}
+        ${esc(c.observaciones)?`<div class="pr-ctrl-field"><div class="pr-ctrl-field-lbl">Observaciones</div>${esc(c.observaciones)}</div>`:''}
+        ${esc(c.otros_profesionales)?`<div class="pr-ctrl-field"><div class="pr-ctrl-field-lbl">Otros Profesionales</div>${esc(c.otros_profesionales)}</div>`:''}
+        ${esc(c.otros)?`<div class="pr-ctrl-field"><div class="pr-ctrl-field-lbl">Otros</div>${esc(c.otros)}</div>`:''}
       </div>
       ${imgSection}
     </div>`;
@@ -778,7 +779,7 @@ window.generatePeriodReport = async function() {
     </div>
     <div class="pr-section"><div class="pr-section-title">Registro de Controles (${rptControles.length})</div>${ctrlHtml}</div>
     <div class="pr-sign-row">
-      <div class="pr-sign">Firma y Sello Médico Tratante<br><br><br>${p.medico_tratante||'____________________________'}</div>
+      <div class="pr-sign">Firma y Sello Médico Tratante<br><br><br>${esc(p.medico_tratante)||'____________________________'}</div>
       <div class="pr-sign">Firma Enfermería / Responsable<br><br><br>____________________________</div>
       <div class="pr-sign">Aclaración y Fecha<br><br><br>____________________________</div>
     </div>
@@ -798,8 +799,8 @@ window.printPaciente = function(id) {
   const now=new Date();
   const fPrint=now.toLocaleDateString('es-AR',{day:'2-digit',month:'long',year:'numeric'});
   const hPrint=now.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'});
-  const fld=(lbl,val)=>`<div class="pr-field"><div class="pr-field-lbl">${lbl}</div><div class="pr-field-val">${val||'<span class="pr-no-data">—</span>'}</div></div>`;
-  const blk=(lbl,val,c='#0b8579')=>val?`<div class="pr-text-block" style="border-left-color:${c}"><div class="pr-text-lbl" style="color:${c}">${lbl}</div><div class="pr-text-val">${val}</div></div>`:'';
+  const fld=(lbl,val)=>`<div class="pr-field"><div class="pr-field-lbl">${lbl}</div><div class="pr-field-val">${esc(val)||'<span class="pr-no-data">—</span>'}</div></div>`;
+  const blk=(lbl,val,c='#0b8579')=>val?`<div class="pr-text-block" style="border-left-color:${c}"><div class="pr-text-lbl" style="color:${c}">${lbl}</div><div class="pr-text-val">${esc(val)}</div></div>`:'';
   document.getElementById('print-report').innerHTML=`
   <div class="pr-page">
     <div class="pr-header">
@@ -833,7 +834,7 @@ window.printPaciente = function(id) {
       ${blk('Otros',p.otros,'#556070')}
     </div>
     <div class="pr-sign-row">
-      <div class="pr-sign">Firma y Sello Médico Tratante<br><br><br>${p.medico_tratante||'____________________________'}</div>
+      <div class="pr-sign">Firma y Sello Médico Tratante<br><br><br>${esc(p.medico_tratante)||'____________________________'}</div>
       <div class="pr-sign">Firma Enfermería<br><br><br>____________________________</div>
       <div class="pr-sign">Aclaración y Fecha<br><br><br>____________________________</div>
     </div>
@@ -854,8 +855,8 @@ window.printCredencial = function(id) {
         <div class="credencial-body">
           <div id="qr-${id}" style="width:20mm;height:20mm;flex-shrink:0;background:#fff;border-radius:3mm;display:flex;align-items:center;justify-content:center;"></div>
           <div class="credencial-datos">
-            <div class="credencial-nombre">${p.apellido}, ${p.nombres}</div>
-            <div class="credencial-dni">DNI: ${p.dni || '—'}</div>
+            <div class="credencial-nombre">${esc(p.apellido)}, ${esc(p.nombres)}</div>
+            <div class="credencial-dni">DNI: ${esc(p.dni) || '—'}</div>
           </div>
         </div>
       </div>
@@ -907,7 +908,7 @@ function renderEntradaPreview() {
   cont.innerHTML = entradaImgFiles.map((item, i) => {
     const url = URL.createObjectURL(item.file);
     return `<div class="img-preview-item" id="prev-item-${i}">
-      <img src="${url}" alt="${item.file.name}" onclick="openLightbox('${url}')">
+      <img src="${url}" alt="${esc(item.file.name)}" onclick="openLightbox('${url}')">
       <button class="img-remove" onclick="removeEntradaImg(${i})" title="Quitar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
       <label class="img-pdf-toggle ${item.incluirPdf ? 'active' : ''}" id="pdf-toggle-${i}">
         <input type="checkbox" ${item.incluirPdf ? 'checked' : ''} onchange="togglePdfImg(${i},this.checked)">
@@ -988,10 +989,10 @@ async function renderGallery(pid,cid){
   if(!files.length){ cont.innerHTML='<p style="font-size:12px;color:var(--text-muted)">Sin adjuntos todavía.</p>'; return; }
   const items=files.map(f=>{
     const path=`${pid}/${f.name}`,url=attachUrl(path),isImg=/\.(jpe?g|png|gif|webp|heic|heif)$/i.test(f.name);
-    return `<div class="gallery-item" title="${f.name}">
-      ${isImg?`<img src="${url}" alt="${f.name}" onclick="openLightbox('${url}')" loading="lazy">`:`<div style="display:grid;place-items:center;height:100%;font-size:11px;color:var(--text-muted);padding:6px;text-align:center;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" width="28" height="28"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg><a href="${url}" target="_blank" style="color:var(--accent);font-size:10px;margin-top:4px">Abrir</a></div>`}
+    return `<div class="gallery-item" title="${esc(f.name)}">
+      ${isImg?`<img src="${url}" alt="${esc(f.name)}" onclick="openLightbox('${url}')" loading="lazy">`:`<div style="display:grid;place-items:center;height:100%;font-size:11px;color:var(--text-muted);padding:6px;text-align:center;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" width="28" height="28"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg><a href="${url}" target="_blank" style="color:var(--accent);font-size:10px;margin-top:4px">Abrir</a></div>`}
       <button class="del-attach" onclick="removeAttach('${path}','${pid}','${cid}')" title="Eliminar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
-      <div class="attach-name">${f.name}</div>
+      <div class="attach-name">${esc(f.name)}</div>
     </div>`;
   });
   cont.innerHTML=`<div class="gallery">${items.join('')}</div>`;
@@ -1027,7 +1028,7 @@ function toast(msg,type='info'){
     error:`<svg viewBox="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`,
     info:`<svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`
   };
-  const el=document.createElement('div'); el.className=`toast ${type}`; el.innerHTML=`${ICONS[type]||''}<span>${msg}</span>`; document.getElementById('toast-wrap').appendChild(el);
+  const el=document.createElement('div'); el.className=`toast ${type}`; el.innerHTML=`${ICONS[type]||''}<span>${esc(msg)}</span>`; document.getElementById('toast-wrap').appendChild(el);
   setTimeout(()=>{ el.style.cssText='opacity:0;transform:translateX(10px);transition:.25s'; setTimeout(()=>el.remove(),260); },3600);
 }
 

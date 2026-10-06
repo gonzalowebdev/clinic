@@ -113,6 +113,7 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 
 /* ── CONFIG ── */
 import { SUPABASE_URL, SUPABASE_ANON } from './js/config.js';
+import { esc } from './js/utils.js';
 const P_TABLE = 'profesionales';
 const PP_TABLE= 'paciente_profesional';
 const USR_TABLE='perfiles';
@@ -188,15 +189,15 @@ async function renderProfesionalDetail() {
       ${fi('Domicilio',p.domicilio)}
       ${fi('Ciudad',p.ciudad)}
     </div>
-    ${p.observaciones?`<div class="clin-note"><div class="clin-lbl">Observaciones</div><div class="clin-txt">${p.observaciones}</div></div>`:''}
+    ${esc(p.observaciones)?`<div class="clin-note"><div class="clin-lbl">Observaciones</div><div class="clin-txt">${esc(p.observaciones)}</div></div>`:''}
     <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin:16px 0 10px;">
       Pacientes asignados (${pacs.length})
     </div>
     ${pacs.length ? `<div class="tbl-wrap"><table><thead><tr><th>Paciente</th><th>DNI</th><th>Patología</th><th>Ver</th></tr></thead><tbody>
       ${pacs.map(pac=>`<tr>
-        <td class="td-p">${pac.apellido}, ${pac.nombres}</td>
-        <td class="td-m">${pac.dni||'—'}</td>
-        <td>${pac.patologia||'<span style="color:var(--text-muted)">—</span>'}</td>
+        <td class="td-p">${esc(pac.apellido)}, ${esc(pac.nombres)}</td>
+        <td class="td-m">${esc(pac.dni)||'—'}</td>
+        <td>${esc(pac.patologia)||'<span style="color:var(--text-muted)">—</span>'}</td>
         <td><button class="ic-btn ic-btn-blue" onclick="location.href='paciente.html?id=${pac.id}'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></td>
       </tr>`).join('')}
     </tbody></table></div>`
@@ -275,7 +276,7 @@ function toast(msg,type='info'){
     error:`<svg viewBox="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`,
     info:`<svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`
   };
-  const el=document.createElement('div'); el.className=`toast ${type}`; el.innerHTML=`${ICONS[type]||''}<span>${msg}</span>`; document.getElementById('toast-wrap').appendChild(el);
+  const el=document.createElement('div'); el.className=`toast ${type}`; el.innerHTML=`${ICONS[type]||''}<span>${esc(msg)}</span>`; document.getElementById('toast-wrap').appendChild(el);
   setTimeout(()=>{ el.style.cssText='opacity:0;transform:translateX(10px);transition:.25s'; setTimeout(()=>el.remove(),260); },3600);
 }
 
