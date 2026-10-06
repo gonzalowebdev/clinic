@@ -13,8 +13,8 @@
 <body>
 <div id="print-report"></div>
 
-<div class="lightbox" id="lightbox" onclick="closeLightbox()">
-  <button class="lightbox-close" onclick="closeLightbox()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+<div class="lightbox" id="lightbox" data-click="closeLightbox">
+  <button class="lightbox-close" data-click="closeLightbox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
   <img id="lightbox-img" src="" alt="">
 </div>
 
@@ -29,13 +29,13 @@
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
   <h2>Paciente no encontrado</h2>
   <p>El paciente que buscás no existe o no tenés acceso a esta ficha.</p>
-  <button class="btn btn-primary btn-sm" onclick="location.href='index.html'">Volver al listado</button>
+  <button class="btn btn-primary btn-sm" data-href="index.html">Volver al listado</button>
 </div>
 
 <!-- PÁGINA DE DETALLE -->
 <div class="det-page" id="det-page" style="display:none;">
   <div class="det-topbar">
-    <button class="back-btn" onclick="location.href='index.html'" title="Volver al listado">
+    <button class="back-btn" data-href="index.html" title="Volver al listado">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12,19 5,12 12,5"/></svg>
     </button>
     <div>
@@ -75,7 +75,7 @@
       <div style="margin-left:auto;display:flex;align-items:center;gap:10px;">
         <span class="status-badge" id="pac-status-badge">—</span>
         <label class="pac-switch" title="Habilitar / deshabilitar paciente">
-          <input type="checkbox" id="pac-status-input" onchange="toggleActivo(this.checked, this)">
+          <input type="checkbox" id="pac-status-input" data-change="toggleActivo" data-change-args='["$checked","$el"]'>
           <span class="slider"></span>
         </label>
       </div>
@@ -89,11 +89,11 @@
 <div class="toast-wrap" id="toast-wrap"></div>
 
 <!-- MODAL: FORM PACIENTE (editar) -->
-<div class="modal-overlay" id="form-overlay" onclick="closeFormIfBg(event)">
+<div class="modal-overlay" id="form-overlay" data-click="closeFormIfBg" data-click-args='["$event"]'>
   <div class="modal">
     <div class="modal-head">
       <div><div class="modal-title" id="form-modal-title">Editar Paciente</div><div class="modal-sub">Los campos con * son obligatorios</div></div>
-      <button class="close-btn" onclick="closeForm()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+      <button class="close-btn" data-click="closeForm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
     </div>
     <div class="modal-body">
       <input type="hidden" id="f-id">
@@ -115,7 +115,7 @@
           <div class="prof-multi" id="prof-multi-widget">
             <div class="prof-multi-search">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="14" height="14" style="color:var(--text-muted);flex-shrink:0"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-              <input type="text" id="prof-multi-q" placeholder="Buscar profesional…" oninput="filterProfMulti(this.value)">
+              <input type="text" id="prof-multi-q" placeholder="Buscar profesional…" data-input="filterProfMulti" data-input-args='["$value"]'>
             </div>
             <div class="prof-multi-list" id="prof-multi-list">
               <div style="padding:10px;font-size:12px;color:var(--text-muted)">Cargando profesionales…</div>
@@ -153,8 +153,8 @@
       </div>
     </div>
     <div class="modal-foot">
-      <button class="btn btn-ghost" onclick="closeForm()">Cancelar</button>
-      <button class="btn btn-primary" id="btn-save" onclick="savePaciente()">
+      <button class="btn btn-ghost" data-click="closeForm">Cancelar</button>
+      <button class="btn btn-primary" id="btn-save" data-click="savePaciente">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" width="15" height="15"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17,21 17,13 7,13 7,21"/><polyline points="7,3 7,8 15,8"/></svg>
         <span id="btn-save-txt">Guardar Paciente</span>
       </button>
@@ -163,11 +163,11 @@
 </div>
 
 <!-- MODAL: ENTRADA DIARIA -->
-<div class="modal-overlay entrada-modal" id="entrada-overlay" onclick="closeEntradaIfBg(event)">
+<div class="modal-overlay entrada-modal" id="entrada-overlay" data-click="closeEntradaIfBg" data-click-args='["$event"]'>
   <div class="modal" style="max-width:700px;">
     <div class="modal-head">
       <div><div class="modal-title" id="entrada-title">Entrada del día</div><div class="modal-sub" id="entrada-sub">Registrá la evolución diaria del paciente</div></div>
-      <button class="close-btn" onclick="closeEntrada()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+      <button class="close-btn" data-click="closeEntrada"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
     </div>
     <div class="entrada-hero" id="entrada-hero">
       <div class="entrada-avatar" id="entrada-avatar">?</div>
@@ -201,10 +201,10 @@
         <div style="font-size:10.5px;font-weight:500;text-transform:uppercase;letter-spacing:.7px;color:var(--text-muted);margin-bottom:8px;">Imágenes del control</div>
         <div class="attach-zone" id="entrada-img-zone" style="padding:16px;">
           <input type="file" multiple accept="image/*" id="entrada-img-input"
-            onchange="previewEntradaImages(this)"
-            ondragover="this.parentElement.classList.add('drag')"
-            ondragleave="this.parentElement.classList.remove('drag')"
-            ondrop="this.parentElement.classList.remove('drag')">
+            data-change="previewEntradaImages" data-change-args='["$el"]'
+            data-dragover="dragOn"
+            data-dragleave="dragOff"
+            data-drop="dragOff">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" style="width:28px;height:28px;margin-bottom:6px;"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17,8 12,3 7,8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
           <p style="font-size:13px;">Tocá para agregar fotos o arrastrá aquí</p>
           <small style="font-size:11px;opacity:.7;">JPG, PNG, HEIC — podés seleccionar varias</small>
@@ -219,8 +219,8 @@
       </div>
     </div>
     <div class="modal-foot">
-      <button class="btn btn-ghost" onclick="closeEntrada()">Cancelar</button>
-      <button class="btn btn-primary" id="btn-entrada-save" onclick="saveEntrada()">
+      <button class="btn btn-ghost" data-click="closeEntrada">Cancelar</button>
+      <button class="btn btn-primary" id="btn-entrada-save" data-click="saveEntrada">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" width="15" height="15"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17,21 17,13 7,13 7,21"/><polyline points="7,3 7,8 15,8"/></svg>
         <span id="btn-entrada-txt">Guardar entrada</span>
       </button>
@@ -229,23 +229,23 @@
 </div>
 
 <!-- MODAL: INFORME POR PERÍODO -->
-<div class="modal-overlay" id="rpt-overlay" onclick="closeRptIfBg(event)">
+<div class="modal-overlay" id="rpt-overlay" data-click="closeRptIfBg" data-click-args='["$event"]'>
   <div class="modal" style="max-width:620px;">
     <div class="modal-head">
       <div><div class="modal-title">Informe por Período</div><div class="modal-sub" id="rpt-modal-sub">Seleccioná el rango de fechas a incluir</div></div>
-      <button class="close-btn" onclick="closeRpt()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+      <button class="close-btn" data-click="closeRpt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
     </div>
     <div class="modal-body">
       <div class="rpt-period-grid">
-        <button class="rpt-period-btn sel" id="rpt-btn-7" onclick="selectPeriod(7,this)"><strong>Últimos 7 días</strong><span>Control semanal para médico</span></button>
-        <button class="rpt-period-btn" id="rpt-btn-15" onclick="selectPeriod(15,this)"><strong>Última quincena</strong><span>15 días de controles</span></button>
-        <button class="rpt-period-btn" id="rpt-btn-30" onclick="selectPeriod(30,this)"><strong>Último mes</strong><span>30 días de controles</span></button>
-        <button class="rpt-period-btn" id="rpt-btn-0" onclick="selectPeriod(0,this)"><strong>Personalizado</strong><span>Elegí fechas exactas</span></button>
+        <button class="rpt-period-btn sel" id="rpt-btn-7" data-click="selectPeriod" data-click-args='[7,"$el"]'><strong>Últimos 7 días</strong><span>Control semanal para médico</span></button>
+        <button class="rpt-period-btn" id="rpt-btn-15" data-click="selectPeriod" data-click-args='[15,"$el"]'><strong>Última quincena</strong><span>15 días de controles</span></button>
+        <button class="rpt-period-btn" id="rpt-btn-30" data-click="selectPeriod" data-click-args='[30,"$el"]'><strong>Último mes</strong><span>30 días de controles</span></button>
+        <button class="rpt-period-btn" id="rpt-btn-0" data-click="selectPeriod" data-click-args='[0,"$el"]'><strong>Personalizado</strong><span>Elegí fechas exactas</span></button>
       </div>
       <div class="rpt-custom" id="rpt-custom">
         <div class="f" style="flex:1"><label>Desde</label><input type="date" id="rpt-from"></div>
         <div class="f" style="flex:1"><label>Hasta</label><input type="date" id="rpt-to"></div>
-        <div class="f" style="align-self:flex-end"><button class="btn btn-ghost btn-sm" onclick="applyCustomPeriod()">Aplicar</button></div>
+        <div class="f" style="align-self:flex-end"><button class="btn btn-ghost btn-sm" data-click="applyCustomPeriod">Aplicar</button></div>
       </div>
       <div class="rpt-preview">
         <div class="rpt-preview-title">Vista previa del período</div>
@@ -254,8 +254,8 @@
       </div>
     </div>
     <div class="modal-foot">
-      <button class="btn btn-ghost" onclick="closeRpt()">Cancelar</button>
-      <button class="btn btn-primary" id="btn-gen-rpt" onclick="generatePeriodReport()">
+      <button class="btn btn-ghost" data-click="closeRpt">Cancelar</button>
+      <button class="btn btn-primary" id="btn-gen-rpt" data-click="generatePeriodReport">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" width="15" height="15"><polyline points="6,9 6,2 18,2 18,9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
         Generar e Imprimir
       </button>

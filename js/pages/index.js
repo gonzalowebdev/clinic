@@ -16,6 +16,9 @@ import '../features/profesionales.js';
 import '../features/usuarios.js';
 import '../features/app.js';
 import '../features/comun.js';
+import { initEvents } from '../events.js';
+
+initEvents();
 
 /* ── CONFIG ── */
 console.log("🔌 Conectando a Supabase");

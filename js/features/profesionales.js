@@ -30,7 +30,7 @@ export function renderProfesionales() {
         <div class="prof-avatar">${esc(inits)}</div>
         <div>
           <div class="td-p">
-            <span class="prof-link" onclick="openProfDet('${p.id}')">${esc(p.apellido)}, ${esc(p.nombres)}</span>
+            <span class="prof-link" data-click="openProfDet" data-click-args="${esc(JSON.stringify([p.id]))}">${esc(p.apellido)}, ${esc(p.nombres)}</span>
           </div>
           <div class="td-s">${esc(p.mail)||''}</div>
         </div>
@@ -40,9 +40,9 @@ export function renderProfesionales() {
       <td>${esc(p.telefono)||'<span style="color:var(--text-muted)">—</span>'}</td>
       <td><span id="prof-pac-count-${p.id}" class="td-m">…</span></td>
       <td><div class="act-row">
-        <button class="ic-btn ic-btn-blue" onclick="openProfDet('${p.id}')" title="Ver"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">${ICO_EYE}</svg></button>
-        <button class="ic-btn ic-btn-green admin-only" onclick="openProfForm('${p.id}')" title="Editar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">${ICO_EDIT}</svg></button>
-        <button class="ic-btn ic-btn-red admin-only" onclick="deleteProfesional('${p.id}')" title="Eliminar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">${ICO_DEL}</svg></button>
+        <button class="ic-btn ic-btn-blue" data-click="openProfDet" data-click-args="${esc(JSON.stringify([p.id]))}" title="Ver"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">${ICO_EYE}</svg></button>
+        <button class="ic-btn ic-btn-green admin-only" data-click="openProfForm" data-click-args="${esc(JSON.stringify([p.id]))}" title="Editar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">${ICO_EDIT}</svg></button>
+        <button class="ic-btn ic-btn-red admin-only" data-click="deleteProfesional" data-click-args="${esc(JSON.stringify([p.id]))}" title="Eliminar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">${ICO_DEL}</svg></button>
       </div></td>
     </tr>`;
   }).join('');

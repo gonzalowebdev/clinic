@@ -9,6 +9,9 @@ import '../features/ficha/controles.js';
 import '../features/ficha/informes.js';
 import '../features/comun.js';
 import '../features/adjuntos.js';
+import { initEvents } from '../events.js';
+
+initEvents();
 
 if (!pacId) {
   showNotFound();

@@ -2,6 +2,9 @@
 import { sb, P_TABLE, PP_TABLE, USR_TABLE } from '../supabase.js';
 import { toast } from '../ui.js';
 import { esc } from '../utils.js';
+import { initEvents } from '../events.js';
+
+initEvents();
 
 /* ── CONFIG ── */
 
@@ -83,7 +86,7 @@ async function renderProfesionalDetail() {
         <td class="td-p">${esc(pac.apellido)}, ${esc(pac.nombres)}</td>
         <td class="td-m">${esc(pac.dni)||'—'}</td>
         <td>${esc(pac.patologia)||'<span style="color:var(--text-muted)">—</span>'}</td>
-        <td><button class="ic-btn ic-btn-blue" onclick="location.href='paciente.html?id=${pac.id}'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></td>
+        <td><button class="ic-btn ic-btn-blue" data-href="paciente.html?id=${encodeURIComponent(pac.id)}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></td>
       </tr>`).join('')}
     </tbody></table></div>`
     : '<p style="font-size:13px;color:var(--text-muted)">Sin pacientes asignados actualmente.</p>'}`;

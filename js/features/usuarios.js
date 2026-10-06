@@ -27,8 +27,8 @@ export async function renderUsuarios() {
       <td><span class="role-badge ${u.rol==='admin'?'role-admin':'role-usuario'}">${u.rol==='admin'?'Admin':'Usuario'}</span></td>
       <td class="td-s">${date}</td>
       <td><div class="act-row">
-        <button class="ic-btn ic-btn-green" onclick="openUsrForm('${u.id}')" title="Editar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">${ICO_EDIT}</svg></button>
-        ${!isSelf?`<button class="ic-btn ic-btn-red" onclick="deleteUsuario('${u.id}')" title="Eliminar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">${ICO_DEL}</svg></button>`:''}
+        <button class="ic-btn ic-btn-green" data-click="openUsrForm" data-click-args="${esc(JSON.stringify([u.id]))}" title="Editar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">${ICO_EDIT}</svg></button>
+        ${!isSelf?`<button class="ic-btn ic-btn-red" data-click="deleteUsuario" data-click-args="${esc(JSON.stringify([u.id]))}" title="Eliminar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">${ICO_DEL}</svg></button>`:''}
       </div></td>
     </tr>`;
   }).join('');

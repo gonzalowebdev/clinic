@@ -188,7 +188,7 @@ export function buildCsvCols() {
   const cont   = document.getElementById('csv-cols-container');
   cont.innerHTML = cols.map(c=>`
     <label class="csv-col-item">
-      <input type="checkbox" value="${c}" checked onchange="updateCsvCount()">
+      <input type="checkbox" value="${c}" checked data-change="updateCsvCount">
       ${labels[c]||c}
     </label>`).join('');
 }
@@ -239,3 +239,6 @@ window.doExportCSV = async function() {
   toast('CSV descargado.','success');
   closeCsvModal();
 };
+
+// Antes el onchange inline no podía llamarla (función de módulo, no global).
+window.updateCsvCount = updateCsvCount;

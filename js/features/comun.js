@@ -101,7 +101,7 @@ export function buildProfMultiList(filter='') {
   list.innerHTML = items.map(p => {
     const sel = state.selectedProfIds.includes(p.id);
     return `<label class="prof-multi-item ${sel?'selected':''}" id="pmi-${p.id}">
-      <input type="checkbox" ${sel?'checked':''} onchange="toggleProfSel('${p.id}',this.checked)">
+      <input type="checkbox" ${sel?'checked':''} data-change="toggleProfSel" data-change-args="${esc(JSON.stringify([p.id, "$checked"]))}">
       <div>
         <div style="font-weight:500;color:var(--text)">${esc(p.apellido)}, ${esc(p.nombres)}</div>
         ${esc(p.especialidad)?`<div style="font-size:11px;color:var(--text-muted)">${esc(p.especialidad)}</div>`:''}
@@ -130,7 +130,7 @@ export function renderProfTags() {
     const label = `${p.apellido}, ${p.nombres}${p.especialidad?' · '+p.especialidad:''}`;
     return `<span class="prof-tag" title="${esc(label)}">
       <span class="prof-tag-txt">${esc(label)}</span>
-      <button onclick="toggleProfSel('${id}',false);const cb=document.querySelector('#pmi-${id} input');if(cb){cb.checked=false;}" title="Quitar">
+      <button data-click="deselectProf" data-click-args="${esc(JSON.stringify([id]))}" title="Quitar">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
       </button>
     </span>`;
@@ -157,3 +157,10 @@ export async function saveProfLinks(pacienteId) {
   const toRemove = existingIds.filter(id => !state.selectedProfIds.includes(id));
   for (const pid of toRemove) await sb.from(PP_TABLE).delete().eq('paciente_id',pacienteId).eq('profesional_id',pid);
 }
+
+// Quita un profesional del formulario: lo deselecciona y destilda su casilla.
+window.deselectProf = function(id) {
+  window.toggleProfSel(id, false);
+  const cb = document.querySelector(`#pmi-${id} input`);
+  if (cb) cb.checked = false;
+};

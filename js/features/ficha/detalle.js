@@ -60,17 +60,17 @@ async function renderPacienteDetail() {
     ? `<div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;">${profsAsig.map(pr=>`
         <span style="display:inline-flex;align-items:center;gap:6px;background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.2);border-radius:20px;padding:4px 12px 4px 8px;">
           <div class="prof-avatar" style="width:22px;height:22px;border-radius:5px;font-size:9px;">${((esc(pr.apellido)||'')[0]||'').toUpperCase()}</div>
-          <span class="prof-link" style="font-size:12.5px;color:#34d399;" onclick="location.href='profesional.html?id=${pr.id}'">${esc(pr.apellido)}, ${esc(pr.nombres)}${esc(pr.especialidad)?' · '+esc(pr.especialidad):''}</span>
+          <span class="prof-link" style="font-size:12.5px;color:#34d399;" data-href="profesional.html?id=${encodeURIComponent(pr.id)}">${esc(pr.apellido)}, ${esc(pr.nombres)}${esc(pr.especialidad)?' · '+esc(pr.especialidad):''}</span>
         </span>`).join('')}</div>`
     : '<span style="color:var(--text-muted);font-size:13px;">Sin profesionales asignados</span>';
 
   document.getElementById('det-body').innerHTML=`
     <div class="tabs">
-      <div class="tab active" onclick="switchTab('datos',this)">Datos Personales</div>
-      <div class="tab" onclick="switchTab('clinico',this)">Clínico</div>
-      <div class="tab" onclick="switchTab('equipos',this)">Equipos</div>
-      <div class="tab" onclick="switchTab('controles',this)">📅 Controles</div>
-      <div class="tab" onclick="switchTab('adjuntos',this)">📎 Adjuntos</div>
+      <div class="tab active" data-click="switchTab" data-click-args='["datos","$el"]'>Datos Personales</div>
+      <div class="tab" data-click="switchTab" data-click-args='["clinico","$el"]'>Clínico</div>
+      <div class="tab" data-click="switchTab" data-click-args='["equipos","$el"]'>Equipos</div>
+      <div class="tab" data-click="switchTab" data-click-args='["controles","$el"]'>📅 Controles</div>
+      <div class="tab" data-click="switchTab" data-click-args='["adjuntos","$el"]'>📎 Adjuntos</div>
     </div>
     <div class="tab-pane active" id="tab-datos">
       <div class="info-grid">
@@ -115,11 +115,11 @@ async function renderPacienteDetail() {
           <div class="f"><label>Otros</label><textarea id="ctrl-otros" placeholder="Información adicional…" style="min-height:60px"></textarea></div>
         </div>
         <div style="display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;">
-          <button class="btn btn-ghost btn-sm" onclick="openRptModal('${p.id}')">
+          <button class="btn btn-ghost btn-sm" data-click="openRptModal" data-click-args="${esc(JSON.stringify([p.id]))}">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="13" height="13"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
             Informe por período
           </button>
-          <button class="btn btn-primary btn-sm" id="ctrl-save-btn" onclick="saveControl('${p.id}','${ctrlListId}')">
+          <button class="btn btn-primary btn-sm" id="ctrl-save-btn" data-click="saveControl" data-click-args="${esc(JSON.stringify([p.id, ctrlListId]))}">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" width="13" height="13"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17,21 17,13 7,13 7,21"/></svg>
             Guardar Control
           </button>
@@ -135,10 +135,10 @@ async function renderPacienteDetail() {
       </div>
       <div class="attach-zone" id="attach-zone-${p.id}">
         <input type="file" multiple accept="image/*,.pdf"
-          onchange="handleFileUpload(this,'${p.id}','${galleryId}')"
-          ondragover="this.parentElement.classList.add('drag')"
-          ondragleave="this.parentElement.classList.remove('drag')"
-          ondrop="this.parentElement.classList.remove('drag')">
+          data-change="handleFileUpload" data-change-args="${esc(JSON.stringify(["$el", p.id, galleryId]))}"
+          data-dragover="dragOn"
+          data-dragleave="dragOff"
+          data-drop="dragOff">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17,8 12,3 7,8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
         <p>Tocá para seleccionar o arrastrá archivos aquí</p>
         <small>Imágenes (JPG, PNG, HEIC) y PDF · Podés subir varios a la vez</small>

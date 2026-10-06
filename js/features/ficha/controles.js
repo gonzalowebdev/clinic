@@ -74,10 +74,10 @@ export async function renderControlesList(pacienteId, containerId) {
           ${imgs.map(img => {
             const url = attachUrl(img.storage_path);
             return `<div class="gallery-item" style="position:relative;">
-              <img src="${url}" alt="${esc(img.nombre)}" onclick="openLightbox('${url}')" loading="lazy">
+              <img src="${url}" alt="${esc(img.nombre)}" data-click="openLightbox" data-click-args="${esc(JSON.stringify([url]))}" loading="lazy">
               <div class="attach-name">${esc(img.nombre)}</div>
               ${img.incluir_pdf ? '<div style="position:absolute;top:3px;left:3px;background:rgba(20,166,150,.85);border-radius:3px;padding:1px 5px;font-size:8px;color:#fff;">PDF</div>' : ''}
-              <button class="del-attach" onclick="deleteCtrlImg('${img.id}','${img.storage_path}','${pacienteId}','${containerId}')" title="Eliminar">
+              <button class="del-attach" data-click="deleteCtrlImg" data-click-args="${esc(JSON.stringify([img.id, img.storage_path, pacienteId, containerId]))}" title="Eliminar">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
               </button>
             </div>`;
@@ -86,7 +86,7 @@ export async function renderControlesList(pacienteId, containerId) {
       </div>` : '';
     return `<div class="ctrl-card">
       <div class="ctrl-date"><span class="ctrl-date-badge">Control</span>${d}${meta ? `<span style="font-size:10px;color:var(--text-muted);margin-left:4px;">· ${meta}</span>` : ''}</div>
-      <button class="ctrl-del-btn" onclick="deleteControl('${c.id}','${pacienteId}','${containerId}')" title="Eliminar control">
+      <button class="ctrl-del-btn" data-click="deleteControl" data-click-args="${esc(JSON.stringify([c.id, pacienteId, containerId]))}" title="Eliminar control">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
       </button>
       <div class="ctrl-fields">${fields || '<span style="font-size:12px;color:var(--text-muted)">Sin datos de texto.</span>'}</div>
@@ -127,10 +127,10 @@ function renderEntradaPreview() {
   cont.innerHTML = state.entradaImgFiles.map((item, i) => {
     const url = URL.createObjectURL(item.file);
     return `<div class="img-preview-item" id="prev-item-${i}">
-      <img src="${url}" alt="${esc(item.file.name)}" onclick="openLightbox('${url}')">
-      <button class="img-remove" onclick="removeEntradaImg(${i})" title="Quitar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+      <img src="${url}" alt="${esc(item.file.name)}" data-click="openLightbox" data-click-args="${esc(JSON.stringify([url]))}">
+      <button class="img-remove" data-click="removeEntradaImg" data-click-args="${esc(JSON.stringify([i]))}" title="Quitar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
       <label class="img-pdf-toggle ${item.incluirPdf ? 'active' : ''}" id="pdf-toggle-${i}">
-        <input type="checkbox" ${item.incluirPdf ? 'checked' : ''} onchange="togglePdfImg(${i},this.checked)">
+        <input type="checkbox" ${item.incluirPdf ? 'checked' : ''} data-change="togglePdfImg" data-change-args="${esc(JSON.stringify([i, "$checked"]))}">
         Incluir en PDF
       </label>
     </div>`;

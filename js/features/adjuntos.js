@@ -12,8 +12,8 @@ export async function renderGallery(pid,cid){
   const items=files.map(f=>{
     const path=`${pid}/${f.name}`,url=attachUrl(path),isImg=/\.(jpe?g|png|gif|webp|heic|heif)$/i.test(f.name);
     return `<div class="gallery-item" title="${esc(f.name)}">
-      ${isImg?`<img src="${url}" alt="${esc(f.name)}" onclick="openLightbox('${url}')" loading="lazy">`:`<div style="display:grid;place-items:center;height:100%;font-size:11px;color:var(--text-muted);padding:6px;text-align:center;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" width="28" height="28"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg><a href="${url}" target="_blank" style="color:var(--accent);font-size:10px;margin-top:4px">Abrir</a></div>`}
-      <button class="del-attach" onclick="removeAttach('${path}','${pid}','${cid}')" title="Eliminar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+      ${isImg?`<img src="${url}" alt="${esc(f.name)}" data-click="openLightbox" data-click-args="${esc(JSON.stringify([url]))}" loading="lazy">`:`<div style="display:grid;place-items:center;height:100%;font-size:11px;color:var(--text-muted);padding:6px;text-align:center;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" width="28" height="28"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg><a href="${url}" target="_blank" style="color:var(--accent);font-size:10px;margin-top:4px">Abrir</a></div>`}
+      <button class="del-attach" data-click="removeAttach" data-click-args="${esc(JSON.stringify([path, pid, cid]))}" title="Eliminar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
       <div class="attach-name">${esc(f.name)}</div>
     </div>`;
   });
