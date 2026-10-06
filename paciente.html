@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Ficha del Paciente · AtHome Enfermería</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <link rel="stylesheet" href="css/base.css">
 <link rel="stylesheet" href="css/detail.css">
@@ -648,7 +648,7 @@ async function renderControlesList(pacienteId, containerId) {
             return `<div class="gallery-item" style="position:relative;">
               <img src="${url}" alt="${img.nombre}" onclick="openLightbox('${url}')" loading="lazy">
               <div class="attach-name">${img.nombre}</div>
-              ${img.incluir_pdf ? '<div style="position:absolute;top:3px;left:3px;background:rgba(59,126,246,.85);border-radius:3px;padding:1px 5px;font-size:8px;color:#fff;">PDF</div>' : ''}
+              ${img.incluir_pdf ? '<div style="position:absolute;top:3px;left:3px;background:rgba(20,166,150,.85);border-radius:3px;padding:1px 5px;font-size:8px;color:#fff;">PDF</div>' : ''}
               <button class="del-attach" onclick="deleteCtrlImg('${img.id}','${img.storage_path}','${pacienteId}','${containerId}')" title="Eliminar">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
               </button>
@@ -797,7 +797,7 @@ window.printPaciente = function(id) {
   const fPrint=now.toLocaleDateString('es-AR',{day:'2-digit',month:'long',year:'numeric'});
   const hPrint=now.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'});
   const fld=(lbl,val)=>`<div class="pr-field"><div class="pr-field-lbl">${lbl}</div><div class="pr-field-val">${val||'<span class="pr-no-data">—</span>'}</div></div>`;
-  const blk=(lbl,val,c='#3b7ef6')=>val?`<div class="pr-text-block" style="border-left-color:${c}"><div class="pr-text-lbl" style="color:${c}">${lbl}</div><div class="pr-text-val">${val}</div></div>`:'';
+  const blk=(lbl,val,c='#0b8579')=>val?`<div class="pr-text-block" style="border-left-color:${c}"><div class="pr-text-lbl" style="color:${c}">${lbl}</div><div class="pr-text-val">${val}</div></div>`:'';
   document.getElementById('print-report').innerHTML=`
   <div class="pr-page">
     <div class="pr-header">
@@ -821,7 +821,7 @@ window.printPaciente = function(id) {
     <div class="pr-section"><div class="pr-section-title">Registros Clínicos</div>
       ${blk('Historia Clínica',p.historia_clinica,'#10b981')}
       ${blk('Epicrisis',p.epicrisis,'#f59e0b')}
-      ${blk('Estudios Complementarios',p.estudios_complementarios,'#06cdf4')}
+      ${blk('Estudios Complementarios',p.estudios_complementarios,'#14b8a6')}
       ${blk('Observaciones',p.observaciones,'#556070')}
     </div>
     <div class="pr-section"><div class="pr-section-title">Equipos de Atención</div>

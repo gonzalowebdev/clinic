@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>AtHome Enfermeria sa</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <link rel="stylesheet" href="css/base.css">
 </head>
@@ -858,7 +858,7 @@ async function renderControlesList(pacienteId, containerId) {
             return `<div class="gallery-item" style="position:relative;">
               <img src="${url}" alt="${img.nombre}" onclick="openLightbox('${url}')" loading="lazy">
               <div class="attach-name">${img.nombre}</div>
-              ${img.incluir_pdf ? '<div style="position:absolute;top:3px;left:3px;background:rgba(59,126,246,.85);border-radius:3px;padding:1px 5px;font-size:8px;color:#fff;">PDF</div>' : ''}
+              ${img.incluir_pdf ? '<div style="position:absolute;top:3px;left:3px;background:rgba(20,166,150,.85);border-radius:3px;padding:1px 5px;font-size:8px;color:#fff;">PDF</div>' : ''}
               <button class="del-attach" onclick="deleteCtrlImg('${img.id}','${img.storage_path}','${pacienteId}','${containerId}')" title="Eliminar">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
               </button>
@@ -1047,7 +1047,7 @@ window.printPaciente = function(id) {
   const fPrint=now.toLocaleDateString('es-AR',{day:'2-digit',month:'long',year:'numeric'});
   const hPrint=now.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'});
   const fld=(lbl,val)=>`<div class="pr-field"><div class="pr-field-lbl">${lbl}</div><div class="pr-field-val">${val||'<span class="pr-no-data">—</span>'}</div></div>`;
-  const blk=(lbl,val,c='#3b7ef6')=>val?`<div class="pr-text-block" style="border-left-color:${c}"><div class="pr-text-lbl" style="color:${c}">${lbl}</div><div class="pr-text-val">${val}</div></div>`:'';
+  const blk=(lbl,val,c='#0b8579')=>val?`<div class="pr-text-block" style="border-left-color:${c}"><div class="pr-text-lbl" style="color:${c}">${lbl}</div><div class="pr-text-val">${val}</div></div>`:'';
   document.getElementById('print-report').innerHTML=`
   <div class="pr-page">
     <div class="pr-header">
@@ -1074,7 +1074,7 @@ window.printPaciente = function(id) {
     <div class="pr-section"><div class="pr-section-title">Registros Clínicos</div>
       ${blk('Historia Clínica',p.historia_clinica,'#10b981')}
       ${blk('Epicrisis',p.epicrisis,'#f59e0b')}
-      ${blk('Estudios Complementarios',p.estudios_complementarios,'#06cdf4')}
+      ${blk('Estudios Complementarios',p.estudios_complementarios,'#14b8a6')}
       ${blk('Observaciones',p.observaciones,'#556070')}
     </div>
     <div class="pr-section"><div class="pr-section-title">Equipos de Atención</div>
@@ -1246,7 +1246,7 @@ function updateStats(){
 const TAGS=['tag-blue','tag-green','tag-amber','tag-cyan'];
 function tagC(id){ let n=0; if(id) for(let i=0;i<Math.min(id.length,8);i++) n+=id.charCodeAt(i); return TAGS[n%TAGS.length]; }
 function initials(p){ return ((p.apellido||'')[0]||'').toUpperCase()+((p.nombres||'')[0]||'').toUpperCase(); }
-function hl(text){ if(!searchQuery||!text) return text||'—'; const esc=searchQuery.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); return String(text).replace(new RegExp(`(${esc})`,'gi'),'<mark style="background:rgba(59,126,246,.3);color:var(--text);border-radius:2px;padding:0 1px">$1</mark>'); }
+function hl(text){ if(!searchQuery||!text) return text||'—'; const esc=searchQuery.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); return String(text).replace(new RegExp(`(${esc})`,'gi'),'<mark style="background:rgba(20,166,150,.3);color:var(--text);border-radius:2px;padding:0 1px">$1</mark>'); }
 
 const ICO_EYE=`<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>`;
 const ICO_EDIT=`<path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>`;
