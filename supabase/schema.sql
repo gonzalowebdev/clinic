@@ -1,10 +1,8 @@
 -- ============================================================================
 -- Clinic · esquema de base de datos para Supabase
 -- Pegar completo en: Supabase → SQL Editor → New query → Run
--- Es idempotente: se puede ejecutar más de una vez.
+-- Es idempotente y seguro sobre una base existente: no recrea tablas ni borra datos.
 -- ============================================================================
-
-create extension if not exists pgcrypto;
 
 -- ── TABLAS ──────────────────────────────────────────────────────────────────
 
@@ -42,7 +40,17 @@ create table if not exists public.pacientes (
   activo                   boolean not null default true,
   created_at               timestamptz not null default now()
 );
-create unique index if not exists pacientes_dni_uidx on public.pacientes (dni);
+alter table public.pacientes add column if not exists activo boolean not null default true;
+
+-- DNI único solo si no hay duplicados (si los hay, se avisa y se deja sin imponer).
+do $$
+begin
+  if exists (select 1 from public.pacientes group by dni having count(*) > 1) then
+    raise notice 'Hay DNI duplicados en pacientes: no se crea el índice único. Corrígelos y vuelve a ejecutar.';
+  else
+    create unique index if not exists pacientes_dni_uidx on public.pacientes (dni);
+  end if;
+end $$;
 
 create table if not exists public.profesionales (
   id            uuid primary key default gen_random_uuid(),
@@ -151,6 +159,9 @@ create policy perfiles_delete on public.perfiles for delete to authenticated
   using (public.is_admin() and id <> auth.uid());
 
 -- pacientes: el equipo ve/crea/edita; solo el admin elimina
+-- (se retiran políticas anteriores que daban acceso total a cualquier usuario logueado)
+drop policy if exists "Usuarios auth pueden todo" on public.pacientes;
+drop policy if exists auth_all on public.pacientes;
 drop policy if exists pacientes_select on public.pacientes;
 drop policy if exists pacientes_insert on public.pacientes;
 drop policy if exists pacientes_update on public.pacientes;
@@ -181,6 +192,9 @@ insert into storage.buckets (id, name, public)
 values ('adjuntos', 'adjuntos', false)
 on conflict (id) do update set public = false;
 
+drop policy if exists "Acceso de lectura a cualquier archivo" on storage.objects;
+drop policy if exists "Usuarios autenticados pueden eliminar" on storage.objects;
+drop policy if exists "Usuarios autenticados pueden subir" on storage.objects;
 drop policy if exists adjuntos_select on storage.objects;
 drop policy if exists adjuntos_insert on storage.objects;
 drop policy if exists adjuntos_delete on storage.objects;
