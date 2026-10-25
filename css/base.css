@@ -369,7 +369,7 @@ tbody tr:hover td{background:var(--hover);}
 /* ADMIN-ONLY visibility */
 .admin-only{display:none!important;}
 body.is-admin .admin-only{display:flex!important;}
-body.is-admin .admin-only-block{display:block!important;}
+body.is-admin .admin-only-block.active{display:block!important;}
 .admin-only-block{display:none!important;}
 
 /* DELETE */
@@ -694,3 +694,7 @@ body.is-admin .admin-only-block{display:block!important;}
 #usr-tbody td:nth-child(3)::before{content:'Rol';}
 #usr-tbody td:nth-child(4)::before{content:'Registrado';}
 }
+
+/* ARRANQUE: pantalla neutra mientras se resuelve la sesión (evita ver el login un instante al volver desde otra página) */
+body.booting::before{content:'';position:fixed;inset:0;z-index:9999;background:var(--bg) url(../logo.svg) center/56px no-repeat;}
+body.booting .page{visibility:hidden;}

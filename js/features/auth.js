@@ -14,12 +14,14 @@ export async function loadUserRole(uid) {
 }
 
 export function showLogin() {
+  document.body.classList.remove('booting');
   document.getElementById('page-login').classList.add('active');
   document.getElementById('page-app').classList.remove('active');
   setTimeout(() => document.getElementById('l-email').focus(), 100);
 }
 
 export function showApp(user) {
+  document.body.classList.remove('booting');
   document.getElementById('page-login').classList.remove('active');
   document.getElementById('page-app').classList.add('active');
   const email = user?.email || '';

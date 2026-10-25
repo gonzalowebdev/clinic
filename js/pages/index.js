@@ -24,10 +24,10 @@ initEvents();
 /* ── CONFIG ── */
 console.log("🔌 Conectando a Supabase");
 
-const { data, error } = await sb.from(TABLE).select('count', { count: 'exact', head: true });
-
-if (error) console.error("❌ Error de conexión o tabla:", error);
-else console.log("✅ Tabla accesible");
+sb.from(TABLE).select('count', { count: 'exact', head: true }).then(({ error }) => {
+  if (error) console.error("❌ Error de conexión o tabla:", error);
+  else console.log("✅ Tabla accesible");
+});
 
 /* ── Columnas DB pacientes ── */
 /* ── Columnas DB controles ── */
@@ -66,6 +66,6 @@ s.textContent='@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transfor
 document.head.appendChild(s);
 
 (function initTheme() {
-  const saved = localStorage.getItem('mc_theme') || 'dark';
+  const saved = localStorage.getItem('mc_theme') || 'light';
   applyTheme(saved);
 })();

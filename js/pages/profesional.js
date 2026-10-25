@@ -160,6 +160,6 @@ actions.confirmDeleteProf = async function() {
    TOAST / THEME
 ══════════════════════════════ */
 
-(function initTheme() { const saved = localStorage.getItem('mc_theme') || 'dark'; if (saved==='light') document.body.classList.add('light'); })();
+(function initTheme() { const saved = localStorage.getItem('mc_theme') || 'light'; if (saved==='dark') document.body.classList.remove('light'); })();
 
 document.addEventListener('keydown',e=>{ if(e.key==='Escape'){actions.closeProfForm();actions.closeDel();} });
