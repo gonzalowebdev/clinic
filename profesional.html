@@ -41,11 +41,11 @@
       <div class="page-title" id="prof-page-title" style="margin-right:0;">Ficha del Profesional</div>
     </div>
     <div class="det-topbar-actions">
-      <button class="btn btn-primary btn-sm" id="btn-prof-edit" style="display:none;">
+      <button class="btn btn-ghost btn-sm" id="btn-prof-edit" style="display:none;">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="14" height="14"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
         Editar
       </button>
-      <button class="btn btn-ghost btn-sm" id="btn-prof-delete" style="display:none;color:#f87171;border-color:rgba(239,68,68,.25);background:rgba(239,68,68,.07);">
+      <button class="btn btn-ghost btn-sm btn-soft-danger" id="btn-prof-delete" style="display:none;">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="14" height="14"><polyline points="3,6 5,6 21,6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>
         Eliminar
       </button>
@@ -54,14 +54,17 @@
 
   <div class="det-content">
     <div class="det-header-card">
-      <div class="det-avatar-lg" id="det-avatar-lg" style="background:linear-gradient(135deg,#10b981,#34d399);">?</div>
-      <div>
+      <div class="det-avatar-lg" id="det-avatar-lg">?</div>
+      <div class="det-header-main">
         <div class="det-header-name" id="det-name">—</div>
         <div class="det-header-sub" id="det-sub">—</div>
+        <div class="det-chips" id="det-chips"></div>
       </div>
     </div>
-    <div class="det-card">
-      <div id="det-body"></div>
+    <div class="kpi-strip" id="det-kpis"></div>
+    <div class="det-layout">
+      <aside class="det-card det-side" id="det-side"></aside>
+      <div class="det-card det-main det-main--plain"><div id="det-body"></div></div>
     </div>
   </div>
 </div>

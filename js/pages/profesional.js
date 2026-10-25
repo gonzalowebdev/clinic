@@ -2,6 +2,7 @@
 import { sb, P_TABLE, PP_TABLE, USR_TABLE } from '../supabase.js';
 import { toast } from '../ui.js';
 import { esc } from '../utils.js';
+import { ICO_EYE } from '../constants.js';
 import { initEvents } from '../events.js';
 import { mountShell, fillShellUser, initTheme } from '../shell.js';
 import { actions } from '../events.js';
@@ -68,33 +69,65 @@ async function renderProfesionalDetail() {
   document.getElementById('btn-prof-edit').onclick   = () => actions.openProfForm();
   document.getElementById('btn-prof-delete').onclick = () => actions.askDeleteProf();
 
-  const { data: links } = await sb.from(PP_TABLE).select('paciente_id, pacientes(id,apellido,nombres,dni,patologia)').eq('profesional_id',p.id);
-  const pacs = (links||[]).map(l=>l.pacientes).filter(Boolean);
+  const { data: links } = await sb.from(PP_TABLE).select('paciente_id, pacientes(id,apellido,nombres,dni,patologia,activo)').eq('profesional_id', p.id);
+  const pacs = (links || []).map(l => l.pacientes).filter(Boolean)
+    .sort((x, y) => `${x.apellido} ${x.nombres}`.localeCompare(`${y.apellido} ${y.nombres}`, 'es'));
+  const clean = v => String(v || '').trim();
 
-  const fi = (lbl,val) => val ? `<div class="info-item"><div class="info-lbl">${lbl}</div><div class="info-val">${val}</div></div>` : '';
+  /* Indicadores calculados con los pacientes asignados */
+  const activos = pacs.filter(x => x.activo !== false).length;
+  const patologias = new Set(pacs.map(x => clean(x.patologia).toLowerCase()).filter(Boolean)).size;
+  const kpi = (lbl, val, sub) => `<div class="kpi"><div class="kpi-lbl">${lbl}</div><div class="kpi-val">${val}</div><div class="kpi-sub">${sub}</div></div>`;
+  document.getElementById('det-kpis').innerHTML =
+    kpi('Pacientes asignados', pacs.length, pacs.length === 1 ? 'paciente' : 'pacientes') +
+    kpi('Activos', activos, 'en seguimiento') +
+    kpi('Inactivos', pacs.length - activos, 'deshabilitados') +
+    kpi('Patologías', patologias, patologias === 1 ? 'distinta' : 'distintas');
+
+  /* Columna lateral: datos profesionales y contacto (los campos vacíos se agrupan en una línea) */
+  const grupo = (titulo, filas) => {
+    const con = filas.filter(([, v]) => clean(v));
+    const sin = filas.filter(([, v]) => !clean(v)).map(([l]) => l);
+    return `<div class="side-title">${titulo}</div>
+      ${con.map(([l, v]) => `<div class="side-row"><div class="side-lbl">${l}</div><div class="side-val">${esc(v)}</div></div>`).join('')}
+      ${sin.length ? `<div class="empty-line">Sin datos: ${sin.join(', ')}</div>` : ''}`;
+  };
+  document.getElementById('det-side').innerHTML =
+    grupo('Contacto', [['Teléfono', p.telefono], ['Mail', p.mail], ['Domicilio', p.domicilio], ['Ciudad', p.ciudad]]);
+
+  /* Cuerpo: observaciones + pacientes asignados */
+  const eye = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICO_EYE}</svg>`;
+  const filas = pacs.map(pac => {
+    const activo = pac.activo !== false;
+    const inits = ((pac.apellido || '')[0] || '').toUpperCase() + ((pac.nombres || '')[0] || '').toUpperCase();
+    const buscar = `${pac.apellido} ${pac.nombres} ${pac.dni || ''} ${pac.patologia || ''}`.toLowerCase();
+    return `<div class="pac-row" data-nom="${esc(buscar)}">
+      <div class="pac-av">${esc(inits) || '?'}</div>
+      <div class="pac-main">
+        <div class="pac-name"><span class="prof-link" data-href="paciente.html?id=${encodeURIComponent(pac.id)}">${esc(pac.apellido)}, ${esc(pac.nombres)}</span></div>
+        <div class="pac-meta">DNI ${esc(pac.dni) || '—'}</div>
+      </div>
+      <div class="pac-tags">${clean(pac.patologia) ? `<span class="chip-tag">${esc(pac.patologia)}</span>` : ''}<span class="status-badge ${activo ? 'active' : 'inactive'}">${activo ? 'Activo' : 'Inactivo'}</span></div>
+      <button class="ic-btn ic-btn-blue" data-href="paciente.html?id=${encodeURIComponent(pac.id)}" title="Ver ficha">${eye}</button>
+    </div>`;
+  }).join('');
   document.getElementById('det-body').innerHTML = `
-    <div class="info-grid" style="margin-bottom:18px;">
-      ${fi('Especialidad',p.especialidad)}
-      ${fi('Matrícula',p.matricula)}
-      ${fi('Teléfono',p.telefono)}
-      ${fi('Mail',p.mail)}
-      ${fi('Domicilio',p.domicilio)}
-      ${fi('Ciudad',p.ciudad)}
-    </div>
-    ${esc(p.observaciones)?`<div class="clin-note"><div class="clin-lbl">Observaciones</div><div class="clin-txt">${esc(p.observaciones)}</div></div>`:''}
-    <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin:16px 0 10px;">
-      Pacientes asignados (${pacs.length})
-    </div>
-    ${pacs.length ? `<div class="tbl-wrap"><table><thead><tr><th>Paciente</th><th>DNI</th><th>Patología</th><th>Ver</th></tr></thead><tbody>
-      ${pacs.map(pac=>`<tr>
-        <td class="td-p">${esc(pac.apellido)}, ${esc(pac.nombres)}</td>
-        <td class="td-m">${esc(pac.dni)||'—'}</td>
-        <td>${esc(pac.patologia)||'<span style="color:var(--text-muted)">—</span>'}</td>
-        <td><button class="ic-btn ic-btn-blue" data-href="paciente.html?id=${encodeURIComponent(pac.id)}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></td>
-      </tr>`).join('')}
-    </tbody></table></div>`
-    : '<p style="font-size:13px;color:var(--text-muted)">Sin pacientes asignados actualmente.</p>'}`;
+    ${clean(p.observaciones) ? `<div class="sum-block"><div class="note-card"><div class="note-lbl">Observaciones</div><div class="note-txt">${esc(p.observaciones)}</div></div></div>` : ''}
+    <div class="sum-block">
+      <div class="sum-head">
+        <div class="sum-lbl" style="margin:0;">Pacientes asignados <span class="tab-count">${pacs.length}</span></div>
+        ${pacs.length > 6 ? `<input class="pac-search" type="search" placeholder="Buscar paciente…" data-input="filterPacsProf" data-input-args='["$value"]'>` : ''}
+      </div>
+      ${pacs.length ? `<div class="pac-list" id="pac-list">${filas}</div>`
+        : `<div class="empty-state"><div class="empty-title">Sin pacientes asignados</div><div class="empty-text">Asigná a este profesional desde la ficha de un paciente (Editar → Profesionales asignados).</div></div>`}
+    </div>`;
 }
+
+/* Filtro local de la lista de pacientes asignados */
+actions.filterPacsProf = function(q) {
+  const t = String(q || '').trim().toLowerCase();
+  document.querySelectorAll('#pac-list .pac-row').forEach(r => { r.style.display = !t || r.dataset.nom.includes(t) ? '' : 'none'; });
+};
 
 /* ══════════════════════════════
    EDITAR PROFESIONAL
