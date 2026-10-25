@@ -3,6 +3,9 @@ import { state } from '../../state.js';
 import { PP_TABLE, P_TABLE, TABLE, USR_TABLE, sb } from '../../supabase.js';
 import { toast } from '../../ui.js';
 import { fmtDate } from '../../forms.js';
+import { diasDesde, fechaCorta, hace } from '../../fechas.js';
+import { loadAttachments } from '../../storage.js';
+import { loadControles } from '../comun.js';
 import { esc } from '../../utils.js';
 import { pacId } from './contexto.js';
 import { renderControlesList } from './controles.js';
@@ -51,61 +54,88 @@ async function renderPacienteDetail() {
   document.getElementById('btn-det-rpt').onclick    = () => actions.openRptModal(p.id);
   document.getElementById('btn-det-entrada').onclick= () => actions.openEntrada(p.id);
 
-  const f=v=>esc(v)||'<span style="color:var(--text-muted)">—</span>';
-  const note=(lbl,val,color='var(--accent)')=>`<div class="clin-note" style="border-left-color:${color}"><div class="clin-lbl" style="color:${color}">${lbl}</div><div class="clin-txt">${esc(val)||'<span style="color:var(--text-muted)">Sin datos registrados.</span>'}</div></div>`;
   const galleryId=`gallery-${p.id}`, ctrlListId=`ctrl-list-${p.id}`;
+  const clean = v => String(v || '').trim();
+  const pid = esc(JSON.stringify([p.id]));
 
-  const {data:links}=await sb.from(PP_TABLE).select('profesional_id, profesionales(id,apellido,nombres,especialidad,matricula,telefono)').eq('paciente_id',p.id);
-  const profsAsig=(links||[]).map(l=>l.profesionales).filter(Boolean);
+  const [{ data: links }, ctrls, files] = await Promise.all([
+    sb.from(PP_TABLE).select('profesional_id, profesionales(id,apellido,nombres,especialidad,matricula,telefono)').eq('paciente_id', p.id),
+    loadControles(p.id),
+    loadAttachments(p.id),
+  ]);
+  const profsAsig = (links || []).map(l => l.profesionales).filter(Boolean);
+
+  /* Encabezado: patologías como etiquetas */
+  const pats = [p.patologia, p.patologia1, p.patologia2].map(clean).filter(Boolean);
+  document.getElementById('det-chips').innerHTML = pats.map(v => `<span class="chip-tag">${esc(v)}</span>`).join('');
+
+  /* Indicadores (calculados con datos existentes) */
+  const last = ctrls.find(c => c.fecha);
+  const dias = last ? diasDesde(last.fecha) : null;
+  const kpi = (lbl, val, sub, cls = '') => `<div class="kpi"><div class="kpi-lbl">${lbl}</div><div class="kpi-val">${val}</div><div class="kpi-sub ${cls}">${sub}</div></div>`;
+  document.getElementById('det-kpis').innerHTML =
+    kpi('Último control', last ? fechaCorta(last.fecha) : '—', last ? hace(dias) : 'Sin controles', dias !== null && dias > 7 ? 'warn' : '') +
+    kpi('Controles', ctrls.length, ctrls.length === 1 ? 'registrado' : 'registrados') +
+    kpi('Adjuntos', files.length, files.length === 1 ? 'archivo' : 'archivos') +
+    kpi('Profesionales', profsAsig.length, profsAsig.length === 1 ? 'asignado' : 'asignados');
+
+  /* Columna lateral: contacto + equipo asignado. Los campos vacíos se agrupan en una línea. */
+  const contacto = [['Teléfonos', p.telefonos], ['Mail', p.mail], ['Domicilio', p.domicilio], ['Ciudad', p.ciudad], ['Contacto familia', p.contacto_familia], ['Médico tratante', p.medico_tratante]];
+  const conDato = contacto.filter(([, v]) => clean(v));
+  const sinDato = contacto.filter(([, v]) => !clean(v)).map(([l]) => l);
   const profsHtml = profsAsig.length
-    ? `<div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;">${profsAsig.map(pr=>`
-        <span style="display:inline-flex;align-items:center;gap:6px;background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.2);border-radius:20px;padding:4px 12px 4px 8px;">
-          <div class="prof-avatar" style="width:22px;height:22px;border-radius:5px;font-size:9px;">${((esc(pr.apellido)||'')[0]||'').toUpperCase()}</div>
-          <span class="prof-link" style="font-size:12.5px;color:#34d399;" data-href="profesional.html?id=${encodeURIComponent(pr.id)}">${esc(pr.apellido)}, ${esc(pr.nombres)}${esc(pr.especialidad)?' · '+esc(pr.especialidad):''}</span>
+    ? `<div class="prof-chips">${profsAsig.map(pr => `
+        <span class="prof-chip">
+          <span class="pa">${esc(((pr.apellido || '')[0] || '').toUpperCase())}</span>
+          <span class="prof-link" data-href="profesional.html?id=${encodeURIComponent(pr.id)}">${esc(pr.apellido)}, ${esc(pr.nombres)}</span>${clean(pr.especialidad) ? `<span class="prof-esp">${esc(pr.especialidad)}</span>` : ''}
         </span>`).join('')}</div>`
-    : '<span style="color:var(--text-muted);font-size:13px;">Sin profesionales asignados</span>';
+    : '<div class="muted">Sin profesionales asignados.</div>';
+  document.getElementById('det-side').innerHTML = `
+    <div class="side-title">Contacto</div>
+    ${conDato.map(([l, v]) => `<div class="side-row"><div class="side-lbl">${l}</div><div class="side-val">${esc(v)}</div></div>`).join('')}
+    ${sinDato.length ? `<div class="empty-line">Sin datos: ${sinDato.join(', ')}</div>` : ''}
+    <div class="side-title">Profesionales asignados</div>
+    ${profsHtml}`;
+
+  /* Bloques de texto clínico: solo los que tienen contenido; los vacíos se resumen en una línea. */
+  const bloques = (lista) => {
+    const con = lista.filter(([, v]) => clean(v));
+    const sin = lista.filter(([, v]) => !clean(v)).map(([l]) => l);
+    if (!con.length) return `<div class="empty-state"><div class="empty-title">Sin información cargada</div><div class="empty-text">Todavía no hay datos en esta sección.</div><button class="btn btn-ghost btn-sm" data-click="openForm" data-click-args="${pid}">Completar en la ficha</button></div>`;
+    return con.map(([l, v]) => `<div class="note-card"><div class="note-lbl">${l}</div><div class="note-txt">${esc(v)}</div></div>`).join('') + (sin.length ? `<div class="empty-line">Sin datos: ${sin.join(', ')}</div>` : '');
+  };
+  const disciplinas = c => [['Enfermería', c.enfermeria], ['Kinesiología', c.kinesiologia], ['Diagnóstico', c.diagnostico_medico], ['Observaciones', c.observaciones], ['Otros profesionales', c.otros_profesionales], ['Otros', c.otros]]
+    .filter(([, v]) => clean(v)).map(([l]) => `<span class="mini-chip">${l}</span>`).join('');
+  const actividad = ctrls.slice(0, 3).map(c => {
+    const meta = [c.turno, c.responsable].filter(Boolean).map(esc).join(' · ');
+    return `<div class="act-row"><div class="act-date">${fechaCorta(c.fecha)}</div><div class="act-main"><div class="act-chips">${disciplinas(c) || '<span class="muted">Sin texto</span>'}</div>${meta ? `<div class="act-meta">${meta}</div>` : ''}</div></div>`;
+  }).join('');
+  const tab = (name, label, on = false) => `<div class="tab${on ? ' active' : ''}" data-click="switchTab" data-click-args='["${name}","$el"]'>${label}</div>`;
 
   document.getElementById('det-body').innerHTML=`
     <div class="tabs">
-      <div class="tab active" data-click="switchTab" data-click-args='["datos","$el"]'>Datos Personales</div>
-      <div class="tab" data-click="switchTab" data-click-args='["clinico","$el"]'>Clínico</div>
-      <div class="tab" data-click="switchTab" data-click-args='["equipos","$el"]'>Equipos</div>
-      <div class="tab" data-click="switchTab" data-click-args='["controles","$el"]'>📅 Controles</div>
-      <div class="tab" data-click="switchTab" data-click-args='["adjuntos","$el"]'>📎 Adjuntos</div>
+      ${tab('resumen', 'Resumen', true)}${tab('clinico', 'Clínico')}${tab('equipos', 'Equipos')}${tab('controles', `Controles <span class="tab-count">${ctrls.length}</span>`)}${tab('adjuntos', `Adjuntos <span class="tab-count">${files.length}</span>`)}
     </div>
-    <div class="tab-pane active" id="tab-datos">
-      <div class="info-grid">
-        <div class="info-item"><div class="info-lbl">DNI</div><div class="info-val">${f(p.dni)}</div></div>
-        <div class="info-item"><div class="info-lbl">Teléfonos</div><div class="info-val">${f(p.telefonos)}</div></div>
-        <div class="info-item"><div class="info-lbl">Mail</div><div class="info-val">${f(p.mail)}</div></div>
-        <div class="info-item"><div class="info-lbl">Domicilio</div><div class="info-val">${f(p.domicilio)}</div></div>
-        <div class="info-item"><div class="info-lbl">Ciudad</div><div class="info-val">${f(p.ciudad)}</div></div>
-        <div class="info-item"><div class="info-lbl">Contacto Familia</div><div class="info-val">${f(p.contacto_familia)}</div></div>
-        <div class="info-item"><div class="info-lbl">Médico Tratante</div><div class="info-val">${f(p.medico_tratante)}</div></div>
-        <div class="info-item"><div class="info-lbl">Patología</div><div class="info-val">${f(p.patologia)}</div></div>
-        <div class="info-item"><div class="info-lbl">Pat. 1 / 2</div><div class="info-val">${[esc(p.patologia1),esc(p.patologia2)].filter(Boolean).join(' · ')||'—'}</div></div>
+    <div class="tab-pane active" id="tab-resumen">
+      <div class="sum-block">
+        <div class="sum-lbl">Diagnóstico médico</div>
+        ${clean(p.diagnostico_medico) ? `<div class="note-txt">${esc(p.diagnostico_medico)}</div>` : '<div class="muted">Sin diagnóstico registrado.</div>'}
       </div>
-      <div style="margin-top:14px;">
-        <div style="font-size:9.5px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:8px;">Profesionales Asignados</div>
-        ${profsHtml}
+      <div class="sum-block">
+        <div class="sum-lbl">Actividad reciente</div>
+        ${ctrls.length ? actividad : `<div class="empty-state"><div class="empty-title">Aún no hay controles</div><div class="empty-text">Registrá la primera entrada para empezar el historial.</div><button class="btn btn-primary btn-sm" data-click="openEntrada" data-click-args="${pid}">Registrar primera entrada</button></div>`}
       </div>
     </div>
     <div class="tab-pane" id="tab-clinico">
-      ${note('Diagnóstico Médico',p.diagnostico_medico,'var(--accent)')}
-      ${note('Historia Clínica',p.historia_clinica,'var(--success)')}
-      ${note('Epicrisis',p.epicrisis,'var(--warning)')}
-      ${note('Estudios Complementarios',p.estudios_complementarios,'var(--accent2)')}
-      ${note('Observaciones',p.observaciones,'var(--text-muted)')}
+      ${bloques([['Diagnóstico médico', p.diagnostico_medico], ['Historia clínica', p.historia_clinica], ['Epicrisis', p.epicrisis], ['Estudios complementarios', p.estudios_complementarios], ['Observaciones', p.observaciones]])}
     </div>
     <div class="tab-pane" id="tab-equipos">
-      ${note('Enfermería',p.enfermeria,'#a78bfa')}
-      ${note('Kinesiología',p.kinesiologia,'#34d399')}
-      ${note('Otros Profesionales',p.otros_profesionales,'#fb923c')}
-      ${note('Otros',p.otros,'var(--text-muted)')}
+      ${bloques([['Enfermería', p.enfermeria], ['Kinesiología', p.kinesiologia], ['Otros profesionales', p.otros_profesionales], ['Otros', p.otros]])}
     </div>
     <div class="tab-pane" id="tab-controles">
+      <details class="ctrl-new">
+        <summary><span class="plus">+</span> Nuevo control</summary>
       <div style="background:var(--surface2);border-radius:10px;padding:16px;margin-bottom:16px;">
-        <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--accent);margin-bottom:12px;">Nuevo Control</div>
         <div class="fgrid" style="margin-bottom:10px;">
           <div class="f"><label>Fecha del control *</label><input type="date" id="ctrl-fecha" value="${fmtDate(new Date())}"></div>
           <div class="f"><label>Enfermería</label><textarea id="ctrl-enfermeria" placeholder="Notas de enfermería…" style="min-height:60px"></textarea></div>
@@ -126,7 +156,8 @@ async function renderPacienteDetail() {
           </button>
         </div>
       </div>
-      <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:10px;">Historial de controles</div>
+      </details>
+      <div class="sum-lbl" style="margin:20px 0 10px;">Historial de controles</div>
       <div id="${ctrlListId}"></div>
     </div>
     <div class="tab-pane" id="tab-adjuntos">

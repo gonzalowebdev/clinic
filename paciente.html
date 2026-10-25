@@ -47,7 +47,7 @@
       <div class="page-title" id="pac-page-title" style="margin-right:0;">Ficha del Paciente</div>
     </div>
     <div class="det-topbar-actions">
-      <button class="btn btn-ghost btn-sm" id="btn-det-entrada" style="background:rgba(139,92,246,.1);color:#a78bfa;border-color:rgba(139,92,246,.25)">
+      <button class="btn btn-primary btn-sm" id="btn-det-entrada">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" width="14" height="14"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         <span class="hide-mobile">Nueva entrada</span>
       </button>
@@ -55,15 +55,15 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="14" height="14"><polyline points="6,9 6,2 18,2 18,9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
         <span class="hide-mobile">Imprimir ficha</span>
       </button>
-      <button class="btn btn-ghost btn-sm" id="btn-det-credencial" style="background:rgba(139,92,246,.1);color:#a78bfa;border-color:rgba(139,92,246,.25);">
+      <button class="btn btn-ghost btn-sm" id="btn-det-credencial">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="14" height="14"><rect x="2" y="4" width="20" height="16" rx="2"/><circle cx="12" cy="10" r="3"/><path d="M12 13v1"/><line x1="8" y1="16" x2="16" y2="16"/></svg>
         <span class="hide-mobile">Credencial</span>
       </button>
-      <button class="btn btn-ghost btn-sm" id="btn-det-rpt" style="background:rgba(16,185,129,.1);color:var(--success);border-color:rgba(16,185,129,.25)">
+      <button class="btn btn-ghost btn-sm" id="btn-det-rpt">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="14" height="14"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
         <span class="hide-mobile">Informe</span>
       </button>
-      <button class="btn btn-primary btn-sm" id="btn-det-edit">
+      <button class="btn btn-ghost btn-sm" id="btn-det-edit">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="14" height="14"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
         Editar
       </button>
@@ -73,11 +73,12 @@
   <div class="det-content">
     <div class="det-header-card">
       <div class="det-avatar-lg" id="det-avatar-lg">?</div>
-      <div>
+      <div class="det-header-main">
         <div class="det-header-name" id="det-name">—</div>
         <div class="det-header-sub" id="det-sub">—</div>
+        <div class="det-chips" id="det-chips"></div>
       </div>
-      <div style="margin-left:auto;display:flex;align-items:center;gap:10px;">
+      <div class="det-header-status">
         <span class="status-badge" id="pac-status-badge">—</span>
         <label class="pac-switch" title="Habilitar / deshabilitar paciente">
           <input type="checkbox" id="pac-status-input" data-change="toggleActivo" data-change-args='["$checked","$el"]'>
@@ -85,8 +86,10 @@
         </label>
       </div>
     </div>
-    <div class="det-card">
-      <div id="det-body"></div>
+    <div class="kpi-strip" id="det-kpis"></div>
+    <div class="det-layout">
+      <aside class="det-card det-side" id="det-side"></aside>
+      <div class="det-card det-main"><div id="det-body"></div></div>
     </div>
   </div>
 </div>

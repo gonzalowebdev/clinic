@@ -7,6 +7,7 @@ import { fmtDate } from '../../forms.js';
 import { esc } from '../../utils.js';
 import { loadControles } from '../comun.js';
 import { actions } from '../../events.js';
+import { mesLargo } from '../../fechas.js';
 
 actions.saveControl = async function(pacienteId, containerId) {
   const fecha = document.getElementById('ctrl-fecha').value;
@@ -56,9 +57,12 @@ export async function renderControlesList(pacienteId, containerId) {
   const imgMap = {};
   for (const c of list) { const { data: imgs } = await sb.from(CI_TABLE).select('*').eq('control_id', c.id); imgMap[c.id] = imgs || []; }
   await signPaths(Object.values(imgMap).flat().map(i=>i.storage_path));
-  cont.innerHTML = list.map(c => {
+  let lastKey = null;
+  cont.innerHTML = '<div class="tl">' + list.map(c => {
+    const key = (c.fecha || '').slice(0, 7);
+    const monthHead = key !== lastKey ? `<div class="tl-month">${mesLargo(c.fecha)}</div>` : '';
+    lastKey = key;
     const d = new Date(c.fecha + 'T00:00:00').toLocaleDateString('es-AR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
-    const meta = [c.responsable, c.turno].filter(Boolean).map(esc).join(' · ');
     const fields = [
       esc(c.enfermeria) && `<div class="ctrl-field"><strong>Enfermería</strong>${esc(c.enfermeria)}</div>`,
       esc(c.kinesiologia) && `<div class="ctrl-field"><strong>Kinesiología</strong>${esc(c.kinesiologia)}</div>`,
@@ -85,15 +89,15 @@ export async function renderControlesList(pacienteId, containerId) {
           }).join('')}
         </div>
       </div>` : '';
-    return `<div class="ctrl-card">
-      <div class="ctrl-date"><span class="ctrl-date-badge">Control</span>${d}${meta ? `<span style="font-size:10px;color:var(--text-muted);margin-left:4px;">· ${meta}</span>` : ''}</div>
+    return monthHead + `<div class="tl-item"><span class="tl-dot"></span><div class="ctrl-card">
+      <div class="ctrl-head"><div class="ctrl-when">${d}</div>${c.turno ? `<span class="mini-chip">${esc(c.turno)}</span>` : ''}${c.responsable ? `<span class="ctrl-resp">${esc(c.responsable)}</span>` : ''}</div>
       <button class="ctrl-del-btn" data-click="deleteControl" data-click-args="${esc(JSON.stringify([c.id, pacienteId, containerId]))}" title="Eliminar control">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
       </button>
       <div class="ctrl-fields">${fields || '<span style="font-size:12px;color:var(--text-muted)">Sin datos de texto.</span>'}</div>
       ${imgHtml}
-    </div>`;
-  }).join('');
+    </div></div>`;
+  }).join('') + '</div>';
 }
 
 actions.openEntrada = function(pacienteId) {
