@@ -3,9 +3,12 @@ import { sb, P_TABLE, PP_TABLE, USR_TABLE } from '../supabase.js';
 import { toast } from '../ui.js';
 import { esc } from '../utils.js';
 import { initEvents } from '../events.js';
+import { mountShell, fillShellUser, initTheme } from '../shell.js';
 import { actions } from '../events.js';
 
 initEvents();
+mountShell({ active: 'profesionales', title: 'Ficha del profesional', mode: 'detail' });
+initTheme();
 
 /* ── CONFIG ── */
 
@@ -18,12 +21,12 @@ if (!profId) {
   showNotFound();
 } else {
   sb.auth.onAuthStateChange(async (_e, session) => {
-    if (session) { await boot(session.user); }
+    if (session) { fillShellUser(session.user); await boot(session.user); }
     else { location.href = 'index.html'; }
   });
   (async () => {
     const { data: { session } } = await sb.auth.getSession();
-    if (session) await boot(session.user);
+    if (session) { fillShellUser(session.user); await boot(session.user); }
     else location.href = 'index.html';
   })();
 }
@@ -160,6 +163,5 @@ actions.confirmDeleteProf = async function() {
    TOAST / THEME
 ══════════════════════════════ */
 
-(function initTheme() { const saved = localStorage.getItem('mc_theme') || 'light'; if (saved==='dark') document.body.classList.remove('light'); })();
 
 document.addEventListener('keydown',e=>{ if(e.key==='Escape'){actions.closeProfForm();actions.closeDel();} });

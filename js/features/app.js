@@ -21,31 +21,23 @@ actions.showView=function(name,el){
   if(window.innerWidth<=768) actions.closeSb();
 };
 
-actions.openSb=()=>{ document.getElementById('sidebar').classList.add('open'); document.getElementById('sb-overlay').classList.add('show'); };
-
-actions.closeSb=()=>{ document.getElementById('sidebar').classList.remove('open'); document.getElementById('sb-overlay').classList.remove('show'); };
-
-export function applyTheme(mode) {
-  const body = document.body;
-  const iconDark  = document.getElementById('theme-icon-dark');
-  const iconLight = document.getElementById('theme-icon-light');
-  const label     = document.getElementById('theme-label');
-  if (mode === 'light') {
-    body.classList.add('light');
-    if (iconDark)  iconDark.style.display  = 'none';
-    if (iconLight) iconLight.style.display = '';
-    if (label)     label.textContent       = 'Modo oscuro';
-  } else {
-    body.classList.remove('light');
-    if (iconDark)  iconDark.style.display  = '';
-    if (iconLight) iconLight.style.display = 'none';
-    if (label)     label.textContent       = 'Modo claro';
+/** Abre la vista pedida en la URL (#pacientes, #nuevo, #buscar=texto). Se usa al llegar desde una ficha. */
+let hashApplied = false;
+export function applyHash() {
+  if (hashApplied) return;
+  hashApplied = true;
+  const h = decodeURIComponent(location.hash.slice(1));
+  if (!h) return;
+  history.replaceState(null, '', location.pathname + location.search);
+  const go = (name) => actions.showView(name, document.querySelector(`.nav-item[data-nav="${name}"]`));
+  if (h === 'nuevo') { go('pacientes'); actions.openForm(); return; }
+  if (h.startsWith('buscar=')) {
+    const q = h.slice(7);
+    go('pacientes');
+    const input = document.getElementById('search-input');
+    if (input) input.value = q;
+    actions.onSearch(q);
+    return;
   }
+  if (VIEW_TITLES[h] && !(h === 'usuarios' && !state.isAdmin)) go(h);
 }
-
-actions.toggleTheme = function() {
-  const isLight = document.body.classList.contains('light');
-  const next = isLight ? 'dark' : 'light';
-  localStorage.setItem('mc_theme', next);
-  applyTheme(next);
-};

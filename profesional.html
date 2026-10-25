@@ -12,6 +12,11 @@
 <body class="light">
 <div class="toast-wrap" id="toast-wrap"></div>
 
+<div class="page active" id="page-app">
+  <div id="shell-aside"></div>
+  <main class="main">
+    <div id="shell-topbar"></div>
+    <div class="content">
 <!-- LOADING -->
 <div id="loading-screen">
   <div class="spin show"></div>
@@ -23,13 +28,13 @@
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
   <h2>Profesional no encontrado</h2>
   <p>El profesional que buscás no existe o no tenés acceso a esta ficha.</p>
-  <button class="btn btn-primary btn-sm" data-href="index.html">Volver al listado</button>
+  <button class="btn btn-primary btn-sm" data-href="index.html">Volver al dashboard</button>
 </div>
 
 <!-- PÁGINA DE DETALLE -->
 <div class="det-page" id="det-page" style="display:none;">
   <div class="det-topbar">
-    <button class="back-btn" data-href="index.html" title="Volver al listado">
+    <button class="back-btn" data-href="index.html" title="Volver al dashboard">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12,19 5,12 12,5"/></svg>
     </button>
     <div>
@@ -62,6 +67,10 @@
 </div>
 
 <!-- MODAL: PROFESIONAL FORM (editar) -->
+    </div>
+  </main>
+</div>
+
 <div class="modal-overlay" id="prof-form-overlay" data-click="closeProfFormIfBg" data-click-args='["$event"]'>
   <div class="modal" style="max-width:640px;">
     <div class="modal-head">

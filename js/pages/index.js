@@ -5,7 +5,8 @@ import { loadUserRole, showApp, showLogin } from '../features/auth.js';
 import { loadPacientes } from '../features/pacientes.js';
 import { buildCsvCols, updateCsvCount } from '../features/informes.js';
 import { loadProfesionales } from '../features/profesionales.js';
-import { applyTheme } from '../features/app.js';
+import { applyHash } from '../features/app.js';
+import { mountShell, initTheme } from '../shell.js';
 import '../features/auth.js';
 import '../features/pacientes.js';
 import '../features/render.js';
@@ -20,6 +21,8 @@ import { initEvents } from '../events.js';
 import { actions } from '../events.js';
 
 initEvents();
+mountShell({ active: 'dashboard', title: 'Dashboard', mode: 'index' });
+initTheme();
 
 /* ── CONFIG ── */
 console.log("🔌 Conectando a Supabase");
@@ -38,6 +41,7 @@ sb.auth.onAuthStateChange(async (_e, session) => {
     await loadUserRole(session.user.id);
     showApp(session.user);
     await Promise.all([loadPacientes(), loadProfesionales()]);
+    applyHash();
   } else {
     state.currentUser = null; state.isAdmin = false;
     document.body.classList.remove('is-admin');
@@ -52,6 +56,7 @@ sb.auth.onAuthStateChange(async (_e, session) => {
     await loadUserRole(session.user.id);
     showApp(session.user);
     await Promise.all([loadPacientes(), loadProfesionales()]);
+    applyHash();
   } else showLogin();
 })();
 
@@ -65,7 +70,3 @@ s.textContent='@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transfor
 
 document.head.appendChild(s);
 
-(function initTheme() {
-  const saved = localStorage.getItem('mc_theme') || 'light';
-  applyTheme(saved);
-})();
