@@ -130,8 +130,7 @@ actions.printCredencial = function(id) {
           </div>
         </div>
         <div class="credencial-body">
-          <!-- Contenedor para el QR -->
-          <div id="qr-${id}" style="width:20mm;height:20mm;flex-shrink:0;background:#fff;border-radius:3mm;display:flex;align-items:center;justify-content:center;"></div>
+          <div class="credencial-qr" id="qr-${id}"></div>
           <div class="credencial-datos">
             <div class="credencial-nombre">${esc(p.apellido)}, ${esc(p.nombres)}</div>
             <div class="credencial-dni">DNI: ${esc(p.dni) || '—'}</div>
@@ -149,11 +148,11 @@ actions.printCredencial = function(id) {
     if (qrContainer) {
       new QRCode(qrContainer, {
         text: `https://athomeenfermeria.netlify.app/paciente.html?id=${id}`,
-        width: 100,   // tamaño en píxeles (alta resolución para impresión)
-        height: 100,
+        width: 400,   // tamaño en píxeles (alta resolución para impresión)
+        height: 400,
         colorDark: '#0c1017',
         colorLight: '#ffffff',
-        correctLevel: QRCode.CorrectLevel.H
+        correctLevel: QRCode.CorrectLevel.M
       });
     }
     // Esperar un poco para que el QR se renderice y luego imprimir

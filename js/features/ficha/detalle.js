@@ -205,7 +205,7 @@ actions.printCredencial = function(id) {
           <div><div class="credencial-org">Clinic</div><div class="credencial-org-sub">Gestión clínica</div></div>
         </div>
         <div class="credencial-body">
-          <div id="qr-${id}" style="width:20mm;height:20mm;flex-shrink:0;background:#fff;border-radius:3mm;display:flex;align-items:center;justify-content:center;"></div>
+          <div class="credencial-qr" id="qr-${id}"></div>
           <div class="credencial-datos">
             <div class="credencial-nombre">${esc(p.apellido)}, ${esc(p.nombres)}</div>
             <div class="credencial-dni">DNI: ${esc(p.dni) || '—'}</div>
@@ -217,7 +217,7 @@ actions.printCredencial = function(id) {
   setTimeout(() => {
     const qrContainer = document.getElementById(`qr-${id}`);
     if (qrContainer) {
-      new QRCode(qrContainer, { text: `https://athomeenfermeria.netlify.app/paciente.html?id=${id}`, width: 100, height: 100, colorDark: '#0c1017', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.H });
+      new QRCode(qrContainer, { text: `https://athomeenfermeria.netlify.app/paciente.html?id=${id}`, width: 400, height: 400, colorDark: '#0c1017', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.M });
     }
     setTimeout(() => window.print(), 400);
   }, 100);

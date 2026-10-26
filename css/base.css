@@ -495,13 +495,13 @@ body.is-admin .admin-only-block.active{display:block!important;}
   padding: 10mm;
 }
 .credencial-card {
-  width: 86mm;
-  height: 54mm;
+  width: 120mm;
+  height: 78mm;
   background: #ffffff;
-  border-radius: 4mm;
+  border-radius: 5mm;
   border: 1px solid #dde3ec;
-  box-shadow: 0 2px 8px rgba(0,0,0,.08);
-  padding: 4mm 5mm;
+  padding: 5mm 6mm;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -512,28 +512,67 @@ body.is-admin .admin-only-block.active{display:block!important;}
 .credencial-header {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 3mm;
   border-bottom: 1px solid #e2e8f0;
   padding-bottom: 3mm;
 }
+.credencial-header img { height: 11mm; width: auto; }
 .credencial-org {
-  font-size: 9pt;
+  font-size: 14pt;
   font-weight: 700;
   color: #0c1017;
   letter-spacing: -0.3px;
 }
 .credencial-org-sub {
-  font-size: 5.5pt;
+  font-size: 7pt;
   text-transform: uppercase;
   letter-spacing: 0.8px;
   color: #556070;
 }
 .credencial-body {
   display: flex;
-  gap: 8px;
+  gap: 7mm;
   align-items: center;
-  padding: 4mm;
+  padding: 3mm 0 0;
   flex: 1;
+}
+/* QR grande y con margen blanco alrededor (zona de silencio) para que se lea bien */
+.credencial-qr {
+  width: 46mm;
+  height: 46mm;
+  flex-shrink: 0;
+  background: #fff;
+  padding: 2.5mm;
+  box-sizing: border-box;
+  border: 1px solid #e2e8f0;
+  border-radius: 3mm;
+}
+.credencial-qr img, .credencial-qr canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+  image-rendering: pixelated;
+}
+.credencial-datos {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2mm;
+  font-size: 10pt;
+  color: #1a2332;
+}
+.credencial-nombre {
+  font-weight: 700;
+  font-size: 15pt;
+  line-height: 1.2;
+  color: #0c1017;
+  overflow-wrap: anywhere;
+}
+.credencial-dni {
+  font-weight: 600;
+  font-size: 12pt;
+  color: #0b8579;
 }
 .credencial-foto {
   width: 20mm;
