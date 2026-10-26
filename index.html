@@ -92,9 +92,14 @@
           <div class="stat-card c-amber"><div class="stat-ic c-amber"><svg viewBox="0 0 24 24" fill="none" stroke="var(--warning)" stroke-width="1.8" stroke-linecap="round"><path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v11m0 0H5a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2h-4"/></svg></div><div class="stat-lbl">Con Estudios</div><div class="stat-val" id="s-estudios">—</div><div class="stat-sub">Estudios cargados</div></div>
           <div class="stat-card c-red"><div class="stat-ic c-red"><svg viewBox="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="1.8" stroke-linecap="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div><div class="stat-lbl">Con Patología</div><div class="stat-val" id="s-patologias">—</div><div class="stat-sub">Diagnósticos activos</div></div>
         </div>
-        <div class="card">
-          <div class="card-head"><div><div class="card-title">Últimos Pacientes</div><div class="card-meta">Actividad reciente</div></div></div>
-          <div class="tbl-wrap"><table class="tbl-cards"><thead><tr><th>Paciente</th><th>DNI</th><th>Patología</th><th>Médico</th><th>Ciudad</th><th>Acciones</th></tr></thead><tbody id="dash-tbody"><tr class="loading-row"><td colspan="6">Cargando…</td></tr></tbody></table></div>
+        <div class="dash-grid">
+          <div>
+          <div class="card">
+            <div class="card-head"><div><div class="card-title">Últimos Pacientes</div><div class="card-meta">Actividad reciente</div></div></div>
+            <div class="tbl-wrap"><table class="tbl-cards"><thead><tr><th>Paciente</th><th>DNI</th><th>Patología</th><th>Médico</th><th>Ciudad</th><th>Acciones</th></tr></thead><tbody id="dash-tbody"><tr class="loading-row"><td colspan="6">Cargando…</td></tr></tbody></table></div>
+          </div>
+          </div>
+          <div class="dash-side" id="dash-side"></div>
         </div>
       </div>
 
@@ -116,10 +121,10 @@
           </div>
           <div class="filter-row">
             <span style="font-size:11px;color:var(--text-muted);flex-shrink:0">Filtrar:</span>
-            <button class="chip active" data-click="setChip" data-click-args='["todos","$el"]'>Todos</button>
-            <button class="chip" data-click="setChip" data-click-args='["patologia","$el"]'>Con Patología</button>
-            <button class="chip" data-click="setChip" data-click-args='["historia","$el"]'>Con Historia</button>
-            <button class="chip" data-click="setChip" data-click-args='["estudios","$el"]'>Con Estudios</button>
+            <button class="chip active" data-click="setChip" data-click-args='["todos","$el"]'>Todos<span class="chip-n" id="chip-n-todos"></span></button>
+            <button class="chip" data-click="setChip" data-click-args='["patologia","$el"]'>Con Patología<span class="chip-n" id="chip-n-patologia"></span></button>
+            <button class="chip" data-click="setChip" data-click-args='["historia","$el"]'>Con Historia<span class="chip-n" id="chip-n-historia"></span></button>
+            <button class="chip" data-click="setChip" data-click-args='["estudios","$el"]'>Con Estudios<span class="chip-n" id="chip-n-estudios"></span></button>
           </div>
           <div id="result-banner"></div>
           <div class="tbl-wrap"><table class="tbl-cards"><thead><tr><th>Paciente</th><th>DNI</th><th>Teléfono</th><th>Patología</th><th>Médico</th><th>Ciudad</th><th>Estado</th><th>Acciones</th></tr></thead><tbody id="main-tbody"><tr class="loading-row"><td colspan="8">Cargando…</td></tr></tbody></table></div>
@@ -155,7 +160,8 @@
               </button>
             </div>
           </div>
-          <div class="tbl-wrap"><table class="tbl-cards"><thead><tr><th>Profesional</th><th>Especialidad</th><th>Matrícula</th><th>Teléfono</th><th>Pacientes</th><th>Acciones</th></tr></thead><tbody id="prof-tbody"><tr class="loading-row"><td colspan="6">Cargando…</td></tr></tbody></table></div>
+          <div class="filter-row" id="prof-esp-chips"></div>
+          <div class="prof-grid" id="prof-grid"></div>
         </div>
       </div>
 

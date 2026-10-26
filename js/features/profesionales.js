@@ -4,7 +4,6 @@ import { PP_TABLE, P_TABLE, sb } from '../supabase.js';
 import { ICO_DEL, ICO_EDIT, ICO_EYE } from '../constants.js';
 import { toast } from '../ui.js';
 import { esc } from '../utils.js';
-import { emptyRow } from './render.js';
 import { buildProfMultiList } from './comun.js';
 import { actions } from '../events.js';
 
@@ -16,45 +15,73 @@ export async function loadProfesionales() {
   buildProfMultiList();
 }
 
+let espFiltro = '';
+const pacCounts = new Map();
+
+/* Se llama al entrar a la vista o tras cambios: vuelve a consultar la cantidad de pacientes. */
 export function renderProfesionales() {
-  const tb = document.getElementById('prof-tbody');
-  if (!state.profesionales.length) {
-    tb.innerHTML = emptyRow(6,
-      `<path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>`,
-      'Sin profesionales', 'Agregá el primer profesional médico');
+  pacCounts.clear();
+  drawProfesionales();
+}
+
+function drawProfesionales() {
+  const grid = document.getElementById('prof-grid');
+  const chips = document.getElementById('prof-esp-chips');
+  const todos = state.profesionales;
+  if (!todos.length) {
+    chips.innerHTML = '';
+    grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1;"><div class="empty-title">Sin profesionales</div><div class="empty-text">Agregá el primer profesional con el botón Nuevo.</div></div>';
     return;
   }
-  tb.innerHTML = state.profesionales.map(p => {
+  /* Filtro por especialidad (se arma con las especialidades existentes) */
+  const esps = new Map();
+  todos.forEach(p => {
+    const label = String(p.especialidad || '').trim(); if (!label) return;
+    const k = label.toLowerCase(), cur = esps.get(k);
+    if (cur) cur.n++; else esps.set(k, { label, n: 1 });
+  });
+  if (espFiltro && !esps.has(espFiltro)) espFiltro = '';
+  const chip = (key, label, n) => `<button class="chip${espFiltro === key ? ' active' : ''}" data-click="filterProfEsp" data-click-args="${esc(JSON.stringify([key]))}">${esc(label)}<span class="chip-n">${n}</span></button>`;
+  chips.innerHTML = esps.size > 1 ? chip('', 'Todas', todos.length) + [...esps].map(([k, v]) => chip(k, v.label, v.n)).join('') : '';
+  chips.style.display = esps.size > 1 ? '' : 'none';
+
+  const lista = espFiltro ? todos.filter(p => String(p.especialidad || '').trim().toLowerCase() === espFiltro) : todos;
+  grid.innerHTML = lista.map(p => {
     const inits = ((p.apellido||'')[0]||'').toUpperCase()+((p.nombres||'')[0]||'').toUpperCase();
-    return `<tr>
-      <td><div style="display:flex;align-items:center;gap:10px;">
+    const args = esc(JSON.stringify([p.id]));
+    const fila = (lbl, v) => String(v || '').trim() ? `<div class="pc-row"><span class="pc-lbl">${lbl}</span><span class="pc-val">${esc(v)}</span></div>` : '';
+    const n = pacCounts.get(p.id);
+    return `<div class="prof-card">
+      <div class="prof-card-top">
         <div class="prof-avatar">${esc(inits)}</div>
-        <div>
-          <div class="td-p">
-            <span class="prof-link" data-click="openProfDet" data-click-args="${esc(JSON.stringify([p.id]))}">${esc(p.apellido)}, ${esc(p.nombres)}</span>
-          </div>
-          <div class="td-s">${esc(p.mail)||''}</div>
+        <div class="prof-card-id">
+          <span class="prof-link" data-click="openProfDet" data-click-args="${args}">${esc(p.apellido)}, ${esc(p.nombres)}</span>
+          <div class="prof-card-esp">${esc(p.especialidad) || 'Sin especialidad'}</div>
         </div>
-      </div></td>
-      <td>${esc(p.especialidad)||'<span style="color:var(--text-muted)">—</span>'}</td>
-      <td><span class="td-m">${esc(p.matricula)||'—'}</span></td>
-      <td>${esc(p.telefono)||'<span style="color:var(--text-muted)">—</span>'}</td>
-      <td><span id="prof-pac-count-${p.id}" class="td-m">…</span></td>
-      <td><div class="act-row">
-        <button class="ic-btn ic-btn-blue" data-click="openProfDet" data-click-args="${esc(JSON.stringify([p.id]))}" title="Ver"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">${ICO_EYE}</svg></button>
-        <button class="ic-btn ic-btn-green admin-only" data-click="openProfForm" data-click-args="${esc(JSON.stringify([p.id]))}" title="Editar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">${ICO_EDIT}</svg></button>
-        <button class="ic-btn ic-btn-red admin-only" data-click="deleteProfesional" data-click-args="${esc(JSON.stringify([p.id]))}" title="Eliminar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">${ICO_DEL}</svg></button>
-      </div></td>
-    </tr>`;
+      </div>
+      <div class="prof-card-rows">${fila('Matrícula', p.matricula)}${fila('Teléfono', p.telefono)}${fila('Mail', p.mail)}</div>
+      <div class="prof-card-foot">
+        <span class="pc-count" id="prof-pac-count-${p.id}">${n === undefined ? '…' : n + (n === 1 ? ' paciente' : ' pacientes')}</span>
+        <div class="act-row">
+          <button class="ic-btn ic-btn-blue" data-click="openProfDet" data-click-args="${args}" title="Ver"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICO_EYE}</svg></button>
+          <button class="ic-btn ic-btn-green admin-only" data-click="openProfForm" data-click-args="${args}" title="Editar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICO_EDIT}</svg></button>
+          <button class="ic-btn ic-btn-red admin-only" data-click="deleteProfesional" data-click-args="${args}" title="Eliminar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICO_DEL}</svg></button>
+        </div>
+      </div>
+    </div>`;
   }).join('');
-  // Load patient counts asynchronously
-  state.profesionales.forEach(p => loadProfPacCount(p.id));
+  // Cantidad de pacientes por profesional: se consulta una sola vez y luego se reutiliza
+  lista.filter(p => !pacCounts.has(p.id)).forEach(p => loadProfPacCount(p.id));
 }
+
+actions.filterProfEsp = function(key) { espFiltro = key; drawProfesionales(); };
 
 async function loadProfPacCount(profId) {
   const { count } = await sb.from(PP_TABLE).select('*',{count:'exact',head:true}).eq('profesional_id', profId);
+  const n = count || 0;
+  pacCounts.set(profId, n);
   const el = document.getElementById(`prof-pac-count-${profId}`);
-  if (el) el.textContent = `${count||0} pac.`;
+  if (el) el.textContent = n + (n === 1 ? ' paciente' : ' pacientes');
 }
 
 actions.openProfForm = function(id=null) {

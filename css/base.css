@@ -188,9 +188,9 @@ body{font-family:var(--sans);font-size:14px;line-height:1.5;-webkit-font-smoothi
 .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px;}
 @media(max-width:900px){.stats-grid{grid-template-columns:repeat(2,1fr);}}
 @media(max-width:480px){.stats-grid{gap:10px;}}
-.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px 20px;position:relative;overflow:hidden;box-shadow:var(--shadow-sm);transition:transform var(--ease),box-shadow var(--ease);}
-.stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-md);}
-.stat-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px 20px;position:relative;overflow:hidden;transition:border-color var(--ease);}
+.stat-card:hover{border-color:var(--accent);}
+.stat-card::after{content:none;}
 .stat-card.c-blue::after{background:linear-gradient(90deg,var(--accent),var(--accent2));}
 .stat-card.c-green::after{background:linear-gradient(90deg,#10b981,#34d399);}
 .stat-card.c-amber::after{background:linear-gradient(90deg,#f59e0b,#fbbf24);}
@@ -207,7 +207,7 @@ body{font-family:var(--sans);font-size:14px;line-height:1.5;-webkit-font-smoothi
 @media(max-width:480px){.stat-val{font-size:28px;}.stat-card{padding:14px;}}
 
 /* CARD / TABLE */
-.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;margin-bottom:18px;box-shadow:var(--shadow-sm);}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;margin-bottom:18px;}
 .card-head{display:flex;align-items:center;justify-content:space-between;padding:15px 18px;border-bottom:1px solid var(--border);gap:12px;flex-wrap:wrap;}
 .card-title{font-size:14.5px;font-weight:500;color:var(--text);}
 .card-meta{font-size:12px;color:var(--text-muted);}
@@ -346,7 +346,7 @@ tbody tr:hover td{background:var(--hover);}
 .role-admin{background:rgba(245,158,11,.15);color:#fbbf24;}
 .role-usuario{background:rgba(20,166,150,.12);color:#5eead4;}
 /* PROFESIONALES */
-.prof-avatar{width:38px;height:38px;border-radius:10px;flex-shrink:0;background:linear-gradient(135deg,#10b981,#34d399);display:grid;place-items:center;font-size:13px;font-weight:700;color:#fff;}
+.prof-avatar{width:40px;height:40px;border-radius:12px;flex-shrink:0;background:var(--accent-soft);display:grid;place-items:center;font-size:13px;font-weight:700;color:var(--accent);}
 .prof-link{color:var(--accent);cursor:pointer;text-decoration:underline;text-underline-offset:2px;}
 .prof-link:hover{opacity:.8;}
 /* PROFESIONALES MULTISELECT */
@@ -699,3 +699,64 @@ body.is-admin .admin-only-block.active{display:block!important;}
 /* ARRANQUE: pantalla neutra mientras se resuelve la sesión (evita ver el login un instante al volver desde otra página) */
 body.booting::before{content:'';position:fixed;inset:0;z-index:9999;background:var(--bg) url(../logo.svg) center/56px no-repeat;}
 body.booting .page{visibility:hidden;}
+
+/* ══════════ Dashboard y listados · Flat 2.0 ══════════ */
+.chip-n{margin-left:6px;font-size:11px;font-weight:600;color:var(--text-muted);}
+.chip.active .chip-n,.chip:hover .chip-n{color:var(--accent);}
+.card-pad{padding:16px 18px;}
+.muted{font-size:13px;color:var(--text-muted);}
+.empty-state{border:1px dashed var(--border);border-radius:var(--r-lg);padding:26px 20px;text-align:center;}
+.empty-title{font-size:14px;font-weight:600;color:var(--text);}
+.empty-text{font-size:13px;color:var(--text-muted);margin:4px 0 0;}
+
+.dash-grid{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:18px;align-items:start;}
+.dash-side .card:last-child{margin-bottom:0;}
+.bar-row{margin-bottom:14px;}
+.bar-row:last-child{margin-bottom:0;}
+.bar-top{display:flex;justify-content:space-between;gap:10px;font-size:13px;margin-bottom:6px;}
+.bar-lbl{color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.bar-n{color:var(--text-muted);font-weight:600;font-variant-numeric:tabular-nums;}
+.bar-track{height:6px;border-radius:99px;background:var(--surface2);overflow:hidden;}
+.bar-fill{height:100%;border-radius:99px;background:var(--accent);}
+.pend-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);font-size:13px;color:var(--text-soft);}
+.pend-row:last-child{border-bottom:none;padding-bottom:0;}
+.pend-row:first-child{padding-top:0;}
+.pend-n{min-width:26px;text-align:center;padding:1px 8px;border-radius:99px;font-size:12px;font-weight:600;background:rgba(245,158,11,.14);color:var(--warning);}
+.pend-n.ok{background:var(--accent-soft);color:var(--accent);}
+
+.prof-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px;padding:18px;}
+.prof-card{border:1px solid var(--border);border-radius:var(--r-lg);padding:16px;display:flex;flex-direction:column;gap:14px;background:var(--surface);transition:border-color var(--ease);}
+.prof-card:hover{border-color:var(--accent);}
+.prof-card-top{display:flex;align-items:center;gap:12px;min-width:0;}
+.prof-card-id{min-width:0;}
+.prof-card-id .prof-link{font-size:14.5px;font-weight:600;color:var(--text);text-decoration:none;cursor:pointer;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.prof-card-id .prof-link:hover{color:var(--accent);}
+.prof-card-esp{font-size:12.5px;color:var(--accent);margin-top:2px;}
+.prof-card-rows{display:flex;flex-direction:column;gap:6px;min-height:20px;}
+.pc-row{display:flex;gap:10px;font-size:13px;min-width:0;}
+.pc-lbl{width:68px;flex-shrink:0;color:var(--text-muted);}
+.pc-val{color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.prof-card-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-top:12px;border-top:1px solid var(--border);margin-top:auto;}
+.pc-count{font-size:12.5px;font-weight:500;color:var(--text-soft);}
+
+@media(max-width:1100px){.dash-grid{grid-template-columns:minmax(0,1fr);}}
+@media(max-width:560px){.prof-grid{grid-template-columns:minmax(0,1fr);padding:14px;}}
+/* Dashboard en dos columnas: la tabla de últimos pacientes muestra lo esencial (sin Médico ni Ciudad) */
+@media(min-width:1101px){
+  .dash-grid .tbl-cards th:nth-child(4),.dash-grid .tbl-cards td:nth-child(4),
+  .dash-grid .tbl-cards th:nth-child(5),.dash-grid .tbl-cards td:nth-child(5){display:none;}
+}
+/* Listados: las columnas de datos no se parten en dos líneas (el nombre sí puede) */
+@media(min-width:561px){
+  #main-tbody td:not(:first-child),#hist-tbody td:not(:first-child),#est-tbody td:not(:first-child){white-space:nowrap;}
+  #main-tbody td:first-child{min-width:190px;}
+  #main-tbody .tag{white-space:nowrap;}
+}
+/* Listado de pacientes: en anchos medios se omiten columnas secundarias (siguen en la ficha) para no scrollear de costado */
+@media(min-width:561px) and (max-width:1399px){
+  #view-pacientes .tbl-cards th:nth-child(6),#view-pacientes .tbl-cards td:nth-child(6){display:none;}
+}
+@media(min-width:561px) and (max-width:1100px){
+  #view-pacientes .tbl-cards th:nth-child(3),#view-pacientes .tbl-cards td:nth-child(3),
+  #view-pacientes .tbl-cards th:nth-child(5),#view-pacientes .tbl-cards td:nth-child(5){display:none;}
+}

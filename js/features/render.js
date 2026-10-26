@@ -12,6 +12,35 @@ function updateStats(){
   document.getElementById('s-historia').textContent=state.pacientes.filter(p=>p.historia_clinica).length;
   document.getElementById('s-estudios').textContent=state.pacientes.filter(p=>p.estudios_complementarios).length;
   document.getElementById('s-patologias').textContent=state.pacientes.filter(p=>p.patologia).length;
+  const chipN = { todos: state.pacientes.length, patologia: state.pacientes.filter(p=>p.patologia).length, historia: state.pacientes.filter(p=>p.historia_clinica).length, estudios: state.pacientes.filter(p=>p.estudios_complementarios).length };
+  for (const [k, n] of Object.entries(chipN)) { const el = document.getElementById('chip-n-' + k); if (el) el.textContent = n; }
+  renderDashSide();
+}
+
+/* Panel lateral del dashboard: patologías frecuentes e información pendiente (datos ya cargados). */
+function renderDashSide() {
+  const el = document.getElementById('dash-side');
+  if (!el) return;
+  const clean = v => String(v || '').trim();
+  const lista = state.pacientes;
+  const mapa = new Map();
+  lista.forEach(p => {
+    const label = clean(p.patologia); if (!label) return;
+    const k = label.toLowerCase(), cur = mapa.get(k);
+    if (cur) cur.n++; else mapa.set(k, { label, n: 1 });
+  });
+  const top = [...mapa.values()].sort((x, y) => y.n - x.n || x.label.localeCompare(y.label, 'es')).slice(0, 5);
+  const max = top.length ? top[0].n : 1;
+  const barras = top.length
+    ? top.map(t => `<div class="bar-row"><div class="bar-top"><span class="bar-lbl">${esc(t.label)}</span><span class="bar-n">${t.n}</span></div><div class="bar-track"><div class="bar-fill" style="width:${Math.round(t.n / max * 100)}%"></div></div></div>`).join('')
+    : '<div class="muted">Aún no hay patologías cargadas.</div>';
+  const pendientes = [['Sin historia clínica', lista.filter(p => !clean(p.historia_clinica)).length], ['Sin estudios', lista.filter(p => !clean(p.estudios_complementarios)).length], ['Sin patología', lista.filter(p => !clean(p.patologia)).length]];
+  const pend = lista.length && pendientes.some(([, n]) => n > 0)
+    ? pendientes.map(([l, n]) => `<div class="pend-row"><span>${l}</span><span class="pend-n${n ? '' : ' ok'}">${n}</span></div>`).join('')
+    : `<div class="muted">${lista.length ? 'Todo al día.' : 'Sin pacientes registrados.'}</div>`;
+  el.innerHTML = `
+    <div class="card"><div class="card-head"><div class="card-title">Patologías frecuentes</div></div><div class="card-pad">${barras}</div></div>
+    <div class="card"><div class="card-head"><div class="card-title">Información pendiente</div></div><div class="card-pad">${pend}</div></div>`;
 }
 
 function tagC(id){ let n=0; if(id) for(let i=0;i<Math.min(id.length,8);i++) n+=id.charCodeAt(i); return TAGS[n%TAGS.length]; }
