@@ -23,7 +23,7 @@ export async function renderUsuarios() {
     const isSelf = u.id === state.currentUser?.id;
     const date = u.created_at ? new Date(u.created_at).toLocaleDateString('es-AR',{day:'2-digit',month:'short',year:'numeric'}) : '—';
     return `<tr>
-      <td><div class="td-p">${esc(u.email)||'—'}${isSelf?'<span style="font-size:10px;color:var(--accent);margin-left:6px;">(vos)</span>':''}</div></td>
+      <td><div class="u-cell"><div class="u-av">${esc((u.nombre || u.email || '?').slice(0,2).toUpperCase())}</div><div class="td-p">${esc(u.email)||'—'}${isSelf?'<span class="you-tag">vos</span>':''}</div></div></td>
       <td>${esc(u.nombre)||'<span style="color:var(--text-muted)">—</span>'}</td>
       <td><span class="role-badge ${u.rol==='admin'?'role-admin':'role-usuario'}">${u.rol==='admin'?'Admin':'Usuario'}</span></td>
       <td class="td-s">${date}</td>

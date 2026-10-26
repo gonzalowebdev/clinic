@@ -135,16 +135,16 @@
       <!-- HISTORIA -->
       <div class="view" id="view-historia">
         <div class="card">
-          <div class="card-head"><div class="card-title">Historias Clínicas</div></div>
-          <div class="tbl-wrap"><table class="tbl-cards"><thead><tr><th>Paciente</th><th>Historia Clínica</th><th>Epicrisis</th><th>Diagnóstico</th><th>Ver</th></tr></thead><tbody id="hist-tbody"></tbody></table></div>
+          <div class="card-head"><div><div class="card-title">Historias Clínicas</div><div class="card-meta" id="hist-count">—</div></div></div>
+          <div class="clin-list" id="hist-list"></div>
         </div>
       </div>
 
       <!-- ESTUDIOS -->
       <div class="view" id="view-estudios">
         <div class="card">
-          <div class="card-head"><div class="card-title">Estudios Complementarios</div></div>
-          <div class="tbl-wrap"><table class="tbl-cards"><thead><tr><th>Paciente</th><th>Estudios</th><th>Observaciones</th><th>Ver</th></tr></thead><tbody id="est-tbody"></tbody></table></div>
+          <div class="card-head"><div><div class="card-title">Estudios Complementarios</div><div class="card-meta" id="est-count">—</div></div></div>
+          <div class="clin-list" id="est-list"></div>
         </div>
       </div>
 
@@ -177,7 +177,7 @@
               </button>
             </div>
           </div>
-          <div style="padding:12px 18px;background:rgba(245,158,11,.06);border-bottom:1px solid var(--border);font-size:12px;color:var(--warning);display:flex;align-items:center;gap:8px;">
+          <div class="info-note">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="14" height="14"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
             Los usuarios nuevos reciben un email de invitación. Solo el admin puede crear, editar rol y eliminar usuarios.
           </div>

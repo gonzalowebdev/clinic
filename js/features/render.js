@@ -98,6 +98,40 @@ function renderPagination(pages,total){
 
 actions.goPage=function(n){ const pages=Math.max(1,Math.ceil(state.filteredList.length/PER)); if(n<1||n>pages) return; state.page=n; renderMain(); };
 
-export function renderHistoria(){ const list=state.pacientes.filter(p=>p.historia_clinica||p.epicrisis||p.diagnostico_medico),tb=document.getElementById('hist-tbody'); tb.innerHTML=!list.length?emptyRow(5,ICO_DOC,'Sin historias clínicas','Completá la historia clínica al editar un paciente'):list.map(p=>`<tr><td class="td-p">${esc(p.apellido)}, ${esc(p.nombres)}</td><td style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;">${esc(p.historia_clinica)||'—'}</td><td style="max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;">${esc(p.epicrisis)||'—'}</td><td style="max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;">${esc(p.diagnostico_medico)||'—'}</td><td><button class="ic-btn ic-btn-blue" data-click="openDet" data-click-args="${esc(JSON.stringify([p.id]))}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">${ICO_EYE}</svg></button></td></tr>`).join(''); }
+/* Resumen clínico por paciente: muestra solo las secciones con contenido (extracto de 3 líneas). */
+function resumenClinico(listaId, countId, lista, secciones, vacio) {
+  const cont = document.getElementById(listaId);
+  document.getElementById(countId).textContent = `${lista.length} paciente${lista.length !== 1 ? 's' : ''}`;
+  if (!lista.length) {
+    cont.innerHTML = `<div style="padding:18px;"><div class="empty-state"><div class="empty-title">${vacio[0]}</div><div class="empty-text">${vacio[1]}</div></div></div>`;
+    return;
+  }
+  const eye = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICO_EYE}</svg>`;
+  cont.innerHTML = lista.map(p => {
+    const args = esc(JSON.stringify([p.id]));
+    const inits = ((p.apellido || '')[0] || '').toUpperCase() + ((p.nombres || '')[0] || '').toUpperCase();
+    const cols = secciones.filter(([, k]) => String(p[k] || '').trim())
+      .map(([lbl, k]) => `<div><div class="note-lbl">${lbl}</div><div class="clin-excerpt">${esc(p[k])}</div></div>`).join('');
+    return `<div class="clin-item">
+      <div class="clin-item-head">
+        <div class="pac-av">${esc(inits) || '?'}</div>
+        <div class="pac-main">
+          <div class="pac-name"><span class="prof-link" data-click="openDet" data-click-args="${args}">${esc(p.apellido)}, ${esc(p.nombres)}</span></div>
+          <div class="pac-meta">DNI ${esc(p.dni) || '—'}${String(p.patologia || '').trim() ? ' · ' + esc(p.patologia) : ''}</div>
+        </div>
+        <button class="ic-btn ic-btn-blue" data-click="openDet" data-click-args="${args}" title="Ver ficha">${eye}</button>
+      </div>
+      <div class="clin-cols">${cols}</div>
+    </div>`;
+  }).join('');
+}
 
-export function renderEstudios(){ const list=state.pacientes.filter(p=>p.estudios_complementarios||p.observaciones),tb=document.getElementById('est-tbody'); tb.innerHTML=!list.length?emptyRow(4,ICO_FLASK,'Sin estudios cargados','Cargá estudios al editar un paciente'):list.map(p=>`<tr><td class="td-p">${esc(p.apellido)}, ${esc(p.nombres)}</td><td style="max-width:260px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;">${esc(p.estudios_complementarios)||'—'}</td><td style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;">${esc(p.observaciones)||'—'}</td><td><button class="ic-btn ic-btn-blue" data-click="openDet" data-click-args="${esc(JSON.stringify([p.id]))}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">${ICO_EYE}</svg></button></td></tr>`).join(''); }
+export function renderHistoria() {
+  const lista = state.pacientes.filter(p => p.historia_clinica || p.epicrisis || p.diagnostico_medico);
+  resumenClinico('hist-list', 'hist-count', lista, [['Historia clínica', 'historia_clinica'], ['Epicrisis', 'epicrisis'], ['Diagnóstico', 'diagnostico_medico']], ['Sin historias clínicas', 'Completá la historia clínica al editar un paciente.']);
+}
+
+export function renderEstudios() {
+  const lista = state.pacientes.filter(p => p.estudios_complementarios || p.observaciones);
+  resumenClinico('est-list', 'est-count', lista, [['Estudios complementarios', 'estudios_complementarios'], ['Observaciones', 'observaciones']], ['Sin estudios cargados', 'Cargá estudios al editar un paciente.']);
+}
