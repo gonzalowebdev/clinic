@@ -151,16 +151,16 @@ actions.printPaciente = function(id) {
       ${blk('Diagnóstico Médico',p.diagnostico_medico)}
     </div>
     <div class="pr-section"><div class="pr-section-title">Registros Clínicos</div>
-      ${blk('Historia Clínica',p.historia_clinica,'#10b981')}
-      ${blk('Epicrisis',p.epicrisis,'#f59e0b')}
-      ${blk('Estudios Complementarios',p.estudios_complementarios,'#14b8a6')}
-      ${blk('Observaciones',p.observaciones,'#556070')}
+      ${blk('Historia Clínica',p.historia_clinica)}
+      ${blk('Epicrisis',p.epicrisis)}
+      ${blk('Estudios Complementarios',p.estudios_complementarios)}
+      ${blk('Observaciones',p.observaciones)}
     </div>
     <div class="pr-section"><div class="pr-section-title">Equipos de Atención</div>
-      ${blk('Enfermería',p.enfermeria,'#a78bfa')}
-      ${blk('Kinesiología',p.kinesiologia,'#34d399')}
-      ${blk('Otros Profesionales',p.otros_profesionales,'#fb923c')}
-      ${blk('Otros',p.otros,'#556070')}
+      ${blk('Enfermería',p.enfermeria)}
+      ${blk('Kinesiología',p.kinesiologia)}
+      ${blk('Otros Profesionales',p.otros_profesionales)}
+      ${blk('Otros',p.otros)}
     </div>
     <div class="pr-sign-row">
       <div class="pr-sign">Firma y Sello Médico Tratante<br><br><br>${esc(p.medico_tratante)||'____________________________'}</div>
