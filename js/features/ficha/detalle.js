@@ -6,7 +6,7 @@ import { fmtDate } from '../../forms.js';
 import { diasDesde, fechaCorta, hace } from '../../fechas.js';
 import { loadAttachments } from '../../storage.js';
 import { loadControles } from '../comun.js';
-import { esc } from '../../utils.js';
+import { esc, fichaUrl } from '../../utils.js';
 import { pacId } from './contexto.js';
 import { renderControlesList } from './controles.js';
 import { renderGallery } from '../adjuntos.js';
@@ -217,7 +217,7 @@ actions.printCredencial = function(id) {
   setTimeout(() => {
     const qrContainer = document.getElementById(`qr-${id}`);
     if (qrContainer) {
-      new QRCode(qrContainer, { text: `https://athomeenfermeria.netlify.app/paciente.html?id=${id}`, width: 400, height: 400, colorDark: '#0c1017', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.M });
+      new QRCode(qrContainer, { text: fichaUrl(id), width: 400, height: 400, colorDark: '#0c1017', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.M });
     }
     setTimeout(() => window.print(), 400);
   }, 100);

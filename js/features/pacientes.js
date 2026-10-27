@@ -4,7 +4,7 @@ import { BUCKET, C_TABLE, TABLE, sb } from '../supabase.js';
 import { DB_COLS } from '../constants.js';
 import { toast } from '../ui.js';
 import { clearFormValues, gv, setFormValues } from '../forms.js';
-import { esc } from '../utils.js';
+import { esc, fichaUrl } from '../utils.js';
 import { renderAll, renderDash, renderMain } from './render.js';
 import { buildProfMultiList, loadPatientProfs, renderProfTags, saveProfLinks } from './comun.js';
 import { actions } from '../events.js';
@@ -147,7 +147,7 @@ actions.printCredencial = function(id) {
     const qrContainer = document.getElementById(`qr-${id}`);
     if (qrContainer) {
       new QRCode(qrContainer, {
-        text: `https://athomeenfermeria.netlify.app/paciente.html?id=${id}`,
+        text: fichaUrl(id),
         width: 400,   // tamaño en píxeles (alta resolución para impresión)
         height: 400,
         colorDark: '#0c1017',
