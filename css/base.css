@@ -825,3 +825,6 @@ body.booting .page{visibility:hidden;}
 /* En celular los botones de los formularios conservan su texto (el CSS general solo deja el ícono) */
 .modal-foot .btn span{display:inline!important;}
 .modal-foot .btn-primary{padding:8px 15px;}
+
+/* Animación de error del login (antes se inyectaba desde JS) */
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}

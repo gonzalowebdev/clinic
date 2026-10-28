@@ -1,0 +1,19 @@
+# Encabezados de seguridad para Netlify (se aplican a todo el sitio). Documentación: https://docs.netlify.com/routing/headers/
+#
+# Content-Security-Policy: solo se permite cargar lo que la app realmente usa.
+#   - scripts: propios + supabase-js (jsDelivr) + qrcode.js (cdnjs)
+#   - estilos: archivos propios + Google Fonts; los atributos style="" de las plantillas se permiten
+#     solo como atributos (style-src-attr); los elementos <style> quedan limitados a archivos propios.
+#     style-src queda como respaldo para navegadores antiguos.
+#   - datos: solo el proyecto de Supabase
+#   - imágenes: propias, vista previa local (blob:), data: (QR) y los adjuntos firmados de Supabase
+# Si cambias de proyecto de Supabase (js/config.js), actualiza su dirección en connect-src e img-src.
+#
+# Referrer-Policy: la dirección de la ficha lleva el id del paciente; no se envía a otros sitios.
+
+/*
+  Content-Security-Policy: default-src 'self'; script-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; style-src-elem 'self' https://fonts.googleapis.com; style-src-attr 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://dedyjnqwrjiwcvsxvqsn.supabase.co; connect-src 'self' https://dedyjnqwrjiwcvsxvqsn.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: same-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()

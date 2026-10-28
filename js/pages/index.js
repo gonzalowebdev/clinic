@@ -63,10 +63,3 @@ sb.auth.onAuthStateChange(async (_e, session) => {
 document.getElementById('csv-source').addEventListener('change',()=>{ buildCsvCols(); updateCsvCount(); });
 
 document.addEventListener('keydown',e=>{ if(e.key==='Escape'){actions.closeForm();actions.closeDet();actions.closeDel();actions.closeLightbox();actions.closeRpt();actions.closeCsvModal();actions.closeEntrada();actions.closeProfForm();actions.closeProfDet();actions.closeUsrForm();} if((e.ctrlKey||e.metaKey)&&e.key==='n'){e.preventDefault();actions.openForm();} });
-
-const s=document.createElement('style');
-
-s.textContent='@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}';
-
-document.head.appendChild(s);
-

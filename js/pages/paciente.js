@@ -33,9 +33,3 @@ if (!pacId) {
 
 
 document.addEventListener('keydown',e=>{ if(e.key==='Escape'){actions.closeForm();actions.closeEntrada();actions.closeRpt();actions.closeLightbox();} });
-
-const s=document.createElement('style');
-
-s.textContent='@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}';
-
-document.head.appendChild(s);
